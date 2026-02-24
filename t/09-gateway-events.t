@@ -28,8 +28,8 @@ subtest 'Dispatcher routes MESSAGE_CREATE events' => {
     $tap.close;
 
     is @received.elems, 2, 'Only MESSAGE_CREATE events routed (not GUILD_CREATE)';
-    is @received[0]<content>, 'Hello', 'First message content correct';
-    is @received[1]<content>, 'World', 'Second message content correct';
+    is @received[0].message.content, 'Hello', 'First message content correct';
+    is @received[1].message.content, 'World', 'Second message content correct';
 };
 
 subtest 'Dispatcher routes GUILD_CREATE events' => {
@@ -50,7 +50,7 @@ subtest 'Dispatcher routes GUILD_CREATE events' => {
     $tap.close;
 
     is @received.elems, 1, 'Only GUILD_CREATE events routed';
-    is @received[0]<name>, 'Test Guild', 'Guild name correct';
+    is @received[0].guild.name, 'Test Guild', 'Guild name correct';
 };
 
 subtest 'Dispatcher generic on() method' => {

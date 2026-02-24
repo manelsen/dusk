@@ -8,7 +8,9 @@
   - *Critério de aceitação*: A função/metodo de envio de mensagem recebe um `channel_id` e o `content`, retornando o objeto da mensagem criada em caso de sucesso.
 - **`RF-03` [Gateway Connection]**: ~~O pacote deve conseguir estabelecer uma conexão WebSocket com o Discord Gateway.~~
   - *Critério de aceitação*: ~~O cliente consegue conectar, enviar o payload de Identify e receber o evento `READY`.~~
-  - **⚠️ WAIVER (2026-02-24)**: Requisito formalmente de-scoped de v0.1.x. Justificativa: o Gateway WebSocket exige um ciclo de design e implementação autônomo (heartbeat, reconnect, event dispatch, intents) incompatível com o escopo REST-only do MVP. Será tratado como RF-03 no ciclo CUEP do v0.2.x. Responsável: @manelsen.
+  - **⚠️ WAIVER (2026-02-24)**: Requisito de-scoped de v0.1.x. Responsável: @manelsen. (Resolvido no release v0.2.1 Asgard).
+- **`RF-04` [Gateway Events Models]**: O pacote deve expor todos os eventos de Gateway como objetos Raku tipados (`Dusk::Event::*`), escondendo os payloads JSON crus e favorecendo a composição de Models base.
+  - *Critério de aceitação*: O `Dusk::Gateway::Dispatcher` deve retornar instâncias de classes e não Hashes nativas.
 
 ## Non-Functional Requirements (RNF)
 

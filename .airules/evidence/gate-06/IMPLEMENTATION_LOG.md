@@ -14,6 +14,8 @@
 | IMPL-08 | RNF-01 | `Client.request` retry | t/05-integration.t (indiretamente) | `lib/Dusk/Rest/Client.rakumod` L58-82 — HTTP 429 → Retry-After → sleep → retry (max 3) |
 | IMPL-09 | RNF-02 | `Client.gist`, `.Str` | t/03-client.t | `lib/Dusk/Rest/Client.rakumod` L26-27 — mascaramento do token |
 | IMPL-10 | RF-01 | `Client` live HTTP | t/05-integration.t | `lib/Dusk/Rest/Client.rakumod` L46-91 — Cro::HTTP::Client com TLS |
+| IMPL-11 | RF-03 | Gateway Core (`Connection`, `Heartbeat`, `Dispatcher`) | t/08, t/09, t/11 | `lib/Dusk/Gateway/*` — Implementação WebSocket Asgard-compliant (v0.2.1) |
+| IMPL-12 | RF-04 | Gateway Events (`Dusk::Event::*`) | t/12-events.t | `lib/Dusk/Event.rakumod`, `lib/Dusk/Event/Events.rakumod` — (v0.2.4) |
 
 ## Nota
 Este log foi criado retroativamente durante a remediação v0.1.1 (2026-02-24). O projeto original não manteve log de implementação por commit, violando CUEP §6.

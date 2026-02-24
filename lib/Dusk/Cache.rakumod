@@ -65,58 +65,37 @@ method all-channels() { %!channels.values }
 
 # --- Remove ---
 
-method remove-guild(Str $id)   { %!guilds{$id}:delete }
-method remove-channel(Str $id) { %!channels{$id}:delete }
-method remove-user(Str $id)    { %!users{$id}:delete }
+method remove-guild(Str $id)   { %!guilds.DELETE-KEY($id) }
+method remove-channel(Str $id) { %!channels.DELETE-KEY($id) }
+method remove-user(Str $id)    { %!users.DELETE-KEY($id) }
 
 # --- Gateway Integration ---
 
 method listen($dispatcher) {
-    @!taps.push: $dispatcher.on-guild-create.tap: -> %d {
-        self.put-guild(~%d<id>, %d);
-        # Cache channels from guild payload
-        if %d<channels> {
-            for %d<channels>.list -> %ch {
-                self.put-channel(~%ch<id>, %ch);
-            }
+    @!taps.push: $dispatcher.on-guild-create.tap: -> $ev {
+        my $raw = $ev.raw;
+        self.put-guild(~$raw<id>, $raw);
+        if $raw<channels> {
+            self.put-channel(~$_<id>, $_) for $raw<channels>.list;
         }
-        # Cache members
-        if %d<members> {
-            for %d<members>.list -> %m {
-                self.put-user(~%m<user><id>, %m<user>) if %m<user>;
-            }
+        if $raw<members> {
+            self.put-user(~$_<user><id>, $_<user>) for $raw<members>.list.grep({ $_<user> });
         }
     };
 
-    @!taps.push: $dispatcher.on('GUILD_DELETE').tap: -> %d {
-        self.remove-guild(~%d<id>);
+    @!taps.push: $dispatcher.on-guild-delete.tap: -> $ev { self.remove-guild(~$ev.id) };
+    @!taps.push: $dispatcher.on-channel-create.tap: -> $ev { self.put-channel(~$ev.channel.id, $ev.raw) };
+    @!taps.push: $dispatcher.on-channel-update.tap: -> $ev { self.put-channel(~$ev.channel.id, $ev.raw) };
+    @!taps.push: $dispatcher.on-channel-delete.tap: -> $ev { self.remove-channel(~$ev.channel.id) };
+    @!taps.push: $dispatcher.on-message-create.tap: -> $ev {
+        my $a = $ev.raw<author>;
+        self.put-user(~$a<id>, $a) if $a;
     };
-
-    @!taps.push: $dispatcher.on('CHANNEL_CREATE').tap: -> %d {
-        self.put-channel(~%d<id>, %d);
+    @!taps.push: $dispatcher.on-guild-member-add.tap: -> $ev {
+        my $u = $ev.raw<user>;
+        self.put-user(~$u<id>, $u) if $u;
     };
-
-    @!taps.push: $dispatcher.on('CHANNEL_UPDATE').tap: -> %d {
-        self.put-channel(~%d<id>, %d);
-    };
-
-    @!taps.push: $dispatcher.on('CHANNEL_DELETE').tap: -> %d {
-        self.remove-channel(~%d<id>);
-    };
-
-    @!taps.push: $dispatcher.on-message-create.tap: -> %d {
-        if %d<author> {
-            self.put-user(~%d<author><id>, %d<author>);
-        }
-    };
-
-    @!taps.push: $dispatcher.on('GUILD_MEMBER_ADD').tap: -> %d {
-        self.put-user(~%d<user><id>, %d<user>) if %d<user>;
-    };
-
-    @!taps.push: $dispatcher.on('GUILD_MEMBER_REMOVE').tap: -> %d {
-        # Don't remove user from cache — might be in other guilds
-    };
+    @!taps.push: $dispatcher.on-guild-member-remove.tap: -> $ev { };
 }
 
 method stop() {
