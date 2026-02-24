@@ -6,26 +6,26 @@ connect → Hello → Identify → Ready → dispatch loop.
 
 =head2 Usage
 
-    use Dusk::Gateway::Connection;
-    use Dusk::Gateway::Intents;
-    use Dusk::Gateway::Dispatcher;
+use Dusk::Gateway::Connection;
+use Dusk::Gateway::Intents;
+use Dusk::Gateway::Dispatcher;
 
-    my $conn = Dusk::Gateway::Connection.new(
-        token   => %*ENV<DISCORD_BOT_TOKEN>,
-        intents => GUILDS +| GUILD_MESSAGES +| MESSAGE_CONTENT,
-    );
+my $conn = Dusk::Gateway::Connection.new(
+token   => %*ENV<DISCORD_BOT_TOKEN>,
+intents => GUILDS +| GUILD_MESSAGES +| MESSAGE_CONTENT,
+);
 
-    my $dispatcher = Dusk::Gateway::Dispatcher.new(events => $conn.events);
+my $dispatcher = Dusk::Gateway::Dispatcher.new(events => $conn.events);
 
-    start {
-        react {
-            whenever $dispatcher.on-message-create -> $data {
-                say "$data<author><username>: $data<content>";
-            }
-        }
-    }
+start {
+react {
+whenever $dispatcher.on-message-create -> $data {
+say "$data<author><username>: $data<content>";
+}
+}
+}
 
-    await $conn.connect;
+await $conn.connect;
 
 =end pod
 
@@ -36,19 +36,33 @@ use Dusk::Gateway::Heartbeat;
 
 unit class Dusk::Gateway::Connection;
 
+#| O Token de autenticação do Bot.
 has Str     $.token    is required;
+
+#| O valor numérico que representa a soma bitwise das Intents requiridas.
 has Int     $.intents  is required;
+
+#| A URL padrão de conexão ao Gateway (versão 10, encoding JSON).
 has Str     $.gateway-url = 'wss://gateway.discord.gg/?v=10&encoding=json';
+
+#| O ID da sessão atual. Preenchido automaticamente após o evento READY.
 has Str     $.session-id is rw = '';
+
+#| A URL de reconexão cedida pelo Discord após o READY.
 has Str     $.resume-gateway-url is rw = '';
+
+#| O número de sequência atual (s) usado para ack de heartbeat e session resume.
 has Int     $.sequence is rw = 0;
 has         $!ws-connection;
 has Dusk::Gateway::Heartbeat $!heartbeat;
 has Supplier $!event-supplier = Supplier::Preserving.new;
 has         &.mock-sender;     # For testing: replaces actual WS send
 
+#| Retorna o L<Supply> (stream reativo) de eventos decodificados L<Dusk::Gateway::Payload> vindo do Gateway.
 method events(--> Supply) { $!event-supplier.Supply }
 
+#| Inicia a conexão assíncrona ao Gateway, negociando o OP_HELLO e enviando IDENTIFY/RESUME.
+#| Este método roda num bloco C<start react> que perpetua o ciclo de vida.
 method connect() {
     start {
         my $client = Cro::WebSocket::Client.new;
@@ -94,6 +108,7 @@ method connect() {
     }
 }
 
+#| Encerra o heartbeat, fecha a conexão WebSocket de forma segura e finaliza o Supplier de eventos.
 method disconnect() {
     $!heartbeat.stop if $!heartbeat;
     $!ws-connection.close if $!ws-connection;
@@ -113,28 +128,28 @@ method !start-heartbeat(Numeric $interval) {
 
 method !send-identify() {
     my $payload = to-json({
-        op => Dusk::Gateway::Payload::OP_IDENTIFY,
-        d  => {
-            token      => $!token,
-            intents    => $!intents,
-            properties => {
-                os      => $*DISTRO.name,
-                browser => 'Dusk',
-                device  => 'Dusk',
+            op => Dusk::Gateway::Payload::OP_IDENTIFY,
+            d  => {
+                token      => $!token,
+                intents    => $!intents,
+                properties => {
+                    os      => $*DISTRO.name,
+                    browser => 'Dusk',
+                    device  => 'Dusk',
+                }
             }
-        }
     });
     self!ws-send($payload);
 }
 
 method !do-resume() {
     my $payload = to-json({
-        op => Dusk::Gateway::Payload::OP_RESUME,
-        d  => {
-            token      => $!token,
-            session_id => $!session-id,
-            seq        => $!sequence,
-        }
+            op => Dusk::Gateway::Payload::OP_RESUME,
+            d  => {
+                token      => $!token,
+                session_id => $!session-id,
+                seq        => $!sequence,
+            }
     });
     self!ws-send($payload);
 }
@@ -147,6 +162,7 @@ method !ws-send(Str $payload) {
     }
 }
 
+#| Usado internamente para testes: substitui o envio WebSocket direto por um mock injetado.
 method set-mock-sender(&callback) {
     &!mock-sender = &callback;
 }

@@ -14,4 +14,5 @@ method content(--> Str) { self.raw<content> }
 
 unit role Dusk::Event;
 
+#| O payload bruto (JSON decodificado em Hash) original enviado pelo Discord.
 has Hash $.raw is required;

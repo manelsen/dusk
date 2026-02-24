@@ -4,13 +4,35 @@ use Dusk::Error;
 use JSON::Fast;
 use Cro::HTTP::Client;
 
+=begin pod
+=head1 Dusk::Rest::Client
+
+Client HTTP otimizado para a API REST do Discord (v10).
+Encapsula a montagem de rotas, injeção de Headers e tratamento automático
+de Rate Limits globais (429 Too Many Requests).
+
+=head2 Usage
+
+use Dusk::Rest::Client;
+use Dusk::Rest::Route;
+
+my $client = Dusk::Rest::Client.new(token => 'SEU_TOKEN_AQUI');
+my $route = Dusk::Rest::Route.new(method => 'GET', path => '/users/@me');
+    
+my $user = await $client.request($route);
+=end pod
+
 unit class Dusk::Rest::Client;
 
+#| O token do bot usado em Authorization.
 has Str $!token;
+#| A versão da API consumida (Padrão: 10).
 has Int $.api-version;
+#| A URL base auto-computada para as rotas da API.
 has Str $.base-url;
 has &!mock-dispatcher;
 
+#| Instancia um cliente exigindo um Token válido do Discord.
 method new(:$token!, :$api-version = 10) {
     self.bless(
         token       => $token,
@@ -31,6 +53,13 @@ method set-mock-dispatcher(&dispatcher) {
     &!mock-dispatcher = &dispatcher;
 }
 
+#| Envia uma requisição assíncrona para a API baseada em um L<Dusk::Rest::Route>.
+#| Internamente pausa a thread (await) caso receba um HTTP 429 (Rate Limit).
+#|
+#| =head3 Exceções
+#| Lança L<Dusk::Error::Unauthorized> (401)
+#| Lança L<Dusk::Error::Forbidden> (403)
+#| Lança L<Dusk::Error::NotFound> (404)
 method request(Dusk::Rest::Route $route) {
     start {
         my $url = $.base-url ~ $route.path;
