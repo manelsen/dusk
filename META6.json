@@ -1,6 +1,6 @@
 {
     "name": "Dusk",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Discord REST API v10 wrapper in Raku.",
     "authors": [
         "micelio"
@@ -23,6 +23,9 @@
         "Dusk::Gateway::Heartbeat": "lib/Dusk/Gateway/Heartbeat.rakumod",
         "Dusk::Gateway::Intents": "lib/Dusk/Gateway/Intents.rakumod",
         "Dusk::Gateway::Payload": "lib/Dusk/Gateway/Payload.rakumod",
+        "Dusk::Interaction::Command": "lib/Dusk/Interaction/Command.rakumod",
+        "Dusk::Interaction::Response": "lib/Dusk/Interaction/Response.rakumod",
+        "Dusk::Component": "lib/Dusk/Component.rakumod",
         "Dusk::Rest::Route": "lib/Dusk/Rest/Route.rakumod"
     },
     "source-url": "https://github.com/manelsen/dusk"
