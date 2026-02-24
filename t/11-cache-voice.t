@@ -2,7 +2,7 @@ use v6.d;
 use Test;
 use JSON::Fast;
 
-plan 5;
+plan 7;
 
 use Dusk::Cache;
 use Dusk::Gateway::Payload;
@@ -79,6 +79,51 @@ subtest 'Cache: Gateway event invalidation' => {
     sleep 0.1;
     is $cache.user-count, 2, 'Author cached from MESSAGE_CREATE';
     is $cache.get-user('2')<username>, 'sender', 'Author username correct';
+
+    $cache.stop;
+};
+
+subtest 'Cache: LRU message bounds' => {
+    my $supplier = Supplier::Preserving.new;
+    my $dispatcher = Dusk::Gateway::Dispatcher.new(events => $supplier.Supply);
+    
+    # Tiny cache for testing
+    my $cache = Dusk::Cache.new(max-messages => 3);
+    $cache.listen($dispatcher);
+
+    for 1..5 -> $i {
+        $supplier.emit(Dusk::Gateway::Payload.new(op => 0, t => 'MESSAGE_CREATE', s => $i,
+            d => { id => ~$i, content => "msg $i" }));
+    }
+    sleep 0.1;
+
+    is $cache.message-count, 3, 'LRU cache bounded to max-messages';
+    
+    my @msgs = $cache.all-messages;
+    is @msgs[0]<id>, '3', 'Oldest message was evicted (1 and 2 are gone)';
+    is @msgs[2]<id>, '5', 'Newest message is kept';
+
+    $cache.stop;
+};
+
+subtest 'Cache: Disabled configs' => {
+    my $supplier = Supplier::Preserving.new;
+    my $dispatcher = Dusk::Gateway::Dispatcher.new(events => $supplier.Supply);
+    
+    my $cache = Dusk::Cache.new(disable => <users guilds messages>);
+    $cache.listen($dispatcher);
+
+    $supplier.emit(Dusk::Gateway::Payload.new(op => 0, t => 'GUILD_CREATE', s => 1,
+        d => { id => '123', name => 'Test Guild', members => [{user => {id => '1'}}] }));
+
+    $supplier.emit(Dusk::Gateway::Payload.new(op => 0, t => 'MESSAGE_CREATE', s => 2,
+        d => { id => '1', content => 'hi' }));
+
+    sleep 0.1;
+    
+    is $cache.guild-count, 0, 'Guilds Disabled: 0 cached';
+    is $cache.user-count, 0, 'Users Disabled: 0 author cached';
+    is $cache.message-count, 0, 'Messages Disabled: 0 message cached';
 
     $cache.stop;
 };
