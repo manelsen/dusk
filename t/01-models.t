@@ -2,7 +2,7 @@ use v6.d;
 use Test;
 use JSON::Fast;
 
-plan 3;
+plan 7;
 
 use Dusk::Model::Message;
 use Dusk::Model::Channel;
@@ -65,4 +65,45 @@ subtest 'Guild Parsing (rest_get_guild.json)' => {
     is $guild.name, "Server Teste", 'Guild name parsed correctly';
     is $guild.owner-id, "383221796700291082", 'Guild owner ID parsed correctly';
     is $guild.verification-level, 0, 'Verification level parsed correctly';
+};
+
+# === DEFENSIVE PARSING TESTS ===
+
+subtest 'Defensive: Channel with missing optional fields' => {
+    lives-ok {
+        my $ch = Dusk::Model::Channel.new(id => '1', name => 'test', type => 0);
+        is $ch.guild-id, '', 'Missing guild-id defaults to empty string';
+        isa-ok $ch.id, Str, 'id is typed as Str';
+        isa-ok $ch.type, Int, 'type is typed as Int';
+    }, 'Channel survives missing optional fields';
+};
+
+subtest 'Defensive: User with minimal data (only id)' => {
+    lives-ok {
+        my $user = Dusk::Model::User.new(id => '12345');
+        is $user.username, '', 'Missing username defaults to empty string';
+        is $user.discriminator, '', 'Missing discriminator defaults to empty string';
+        is $user.bot, False, 'Missing bot defaults to False';
+        isa-ok $user.id, Str, 'id is typed as Str';
+    }, 'User survives minimal data';
+};
+
+subtest 'Defensive: Guild with null verification_level' => {
+    lives-ok {
+        my $guild = Dusk::Model::Guild.new(
+            id => '1', name => 'Test', verification_level => Any
+        );
+        is $guild.verification-level, 0, 'Null verification_level coerced to 0';
+        is $guild.owner-id, '', 'Missing owner-id defaults to empty string';
+    }, 'Guild survives null fields';
+};
+
+subtest 'Defensive: Message without author' => {
+    lives-ok {
+        my $msg = Dusk::Model::Message.new(
+            id => '1', channel_id => '2', content => 'test'
+        );
+        is $msg.content, 'test', 'Content parsed correctly';
+        is $msg.channel-id, '2', 'Channel ID parsed correctly';
+    }, 'Message survives missing author';
 };
