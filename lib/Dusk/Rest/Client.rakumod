@@ -24,15 +24,15 @@ my $user = await $client.request($route);
 
 unit class Dusk::Rest::Client;
 
-#| O token do bot usado em Authorization.
+#| The bot token used in Authorization.
 has Str $!token;
-#| A versão da API consumida (Padrão: 10).
+#| The targeted API version (Default: 10).
 has Int $.api-version;
-#| A URL base auto-computada para as rotas da API.
+#| The auto-computed base URL for API routes.
 has Str $.base-url;
 has &!mock-dispatcher;
 
-#| Instancia um cliente exigindo um Token válido do Discord.
+#| Instantiates a client requiring a valid Discord Token.
 method new(:$token!, :$api-version = 10) {
     self.bless(
         token       => $token,
@@ -53,13 +53,13 @@ method set-mock-dispatcher(&dispatcher) {
     &!mock-dispatcher = &dispatcher;
 }
 
-#| Envia uma requisição assíncrona para a API baseada em um L<Dusk::Rest::Route>.
-#| Internamente pausa a thread (await) caso receba um HTTP 429 (Rate Limit).
+#| Sends an asynchronous request to the API based on a L<Dusk::Rest::Route>.
+#| Internally pauses the thread (await) if an HTTP 429 (Rate Limit) is received.
 #|
-#| =head3 Exceções
-#| Lança L<Dusk::Error::Unauthorized> (401)
-#| Lança L<Dusk::Error::Forbidden> (403)
-#| Lança L<Dusk::Error::NotFound> (404)
+#| =head3 Exceptions
+#| Throws L<Dusk::Error::Unauthorized> (401)
+#| Throws L<Dusk::Error::Forbidden> (403)
+#| Throws L<Dusk::Error::NotFound> (404)
 method request(Dusk::Rest::Route $route) {
     start {
         my $url = $.base-url ~ $route.path;

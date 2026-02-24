@@ -22,10 +22,10 @@ use Dusk::Gateway::Payload;
 
 unit class Dusk::Gateway::Dispatcher;
 
-#| O Supply nativo do qual o dispatcher recebe os payloads brutos do C<Connection>.
+#| The native Supply from which the dispatcher receives raw payloads from C<Connection>.
 has Supply $.events is required;   # Supply of Dusk::Gateway::Payload
 
-#| Assina um evento de Gateway genérico ("OP_DISPATCH") e retorna um L<Supply> filtrado contendo o hash raiz do payload ("d").
+#| Subscribes to a generic Gateway event ("OP_DISPATCH") and returns a filtered L<Supply> containing the payload's root hash ("d").
 method on(Str $event-name --> Supply) {
     $!events.grep({ .is-dispatch && .t eq $event-name }).map({ .d });
 }
@@ -33,18 +33,18 @@ method on(Str $event-name --> Supply) {
 use Dusk::Event::Events;
 
 # --- Convenience Methods ---
-#| Retornam L<Supply> contendo as representações fortemente tipadas L<Dusk::Event::Events::*> de cada evento.
+#| Returns L<Supply> containing strongly-typed L<Dusk::Event::Events::*> representations of each event.
 
-#| Evento emitido quando a sessão do bot é estabelecida de forma bem-sucedida.
+#| Emitted when the bot's session is successfully established.
 method on-ready(--> Supply)                  { self.on('READY').map( { Dusk::Event::Events::Ready.new(raw => $_) }) }
-#| Emitido quando uma nova mensagem é criada em um canal.
+#| Emitted when a new message is created in a channel.
 method on-message-create(--> Supply)         { self.on('MESSAGE_CREATE').map( { Dusk::Event::Events::MessageCreate.new(raw => $_) }) }
 method on-message-update(--> Supply)         { self.on('MESSAGE_UPDATE').map( { Dusk::Event::Events::MessageUpdate.new(raw => $_) }) }
 method on-message-delete(--> Supply)         { self.on('MESSAGE_DELETE').map( { Dusk::Event::Events::MessageDelete.new(raw => $_) }) }
-#| Emitido quando uma nova Guild se torna disponível ao bot (início do bot ou convite aceito).
+#| Emitted when a new Guild becomes available to the bot (bot startup or invite accepted).
 method on-guild-create(--> Supply)           { self.on('GUILD_CREATE').map( { Dusk::Event::Events::GuildCreate.new(raw => $_) }) }
 method on-guild-delete(--> Supply)           { self.on('GUILD_DELETE').map( { Dusk::Event::Events::GuildDelete.new(raw => $_) }) }
-#| Emitido quando um usuário interage com um Slash Command ou Componente UI. Central para desenvolvimento de Bots v10.
+#| Emitted when a user interacts with a Slash Command or UI Component. Central to v10 Bot development.
 method on-interaction-create(--> Supply)     { self.on('INTERACTION_CREATE').map( { Dusk::Event::Events::InteractionCreate.new(raw => $_) }) }
 method on-thread-create(--> Supply)          { self.on('THREAD_CREATE').map( { Dusk::Event::Events::ThreadCreate.new(raw => $_) }) }
 method on-presence-update(--> Supply)        { self.on('PRESENCE_UPDATE').map( { Dusk::Event::Events::PresenceUpdate.new(raw => $_) }) }

@@ -36,33 +36,33 @@ use Dusk::Gateway::Heartbeat;
 
 unit class Dusk::Gateway::Connection;
 
-#| O Token de autenticação do Bot.
+#| The Bot authentication token.
 has Str     $.token    is required;
 
-#| O valor numérico que representa a soma bitwise das Intents requiridas.
+#| The numeric value representing the bitwise sum of requested Intents.
 has Int     $.intents  is required;
 
-#| A URL padrão de conexão ao Gateway (versão 10, encoding JSON).
+#| The default Gateway connection URL (version 10, JSON encoding).
 has Str     $.gateway-url = 'wss://gateway.discord.gg/?v=10&encoding=json';
 
-#| O ID da sessão atual. Preenchido automaticamente após o evento READY.
+#| The current session ID. Automatically populated after the READY event.
 has Str     $.session-id is rw = '';
 
-#| A URL de reconexão cedida pelo Discord após o READY.
+#| The resume URL provided by Discord after the READY event.
 has Str     $.resume-gateway-url is rw = '';
 
-#| O número de sequência atual (s) usado para ack de heartbeat e session resume.
+#| The current sequence number (s) used for heartbeat acks and session resuming.
 has Int     $.sequence is rw = 0;
 has         $!ws-connection;
 has Dusk::Gateway::Heartbeat $!heartbeat;
 has Supplier $!event-supplier = Supplier::Preserving.new;
 has         &.mock-sender;     # For testing: replaces actual WS send
 
-#| Retorna o L<Supply> (stream reativo) de eventos decodificados L<Dusk::Gateway::Payload> vindo do Gateway.
+#| Returns the L<Supply> (reactive stream) of decoded L<Dusk::Gateway::Payload> events from the Gateway.
 method events(--> Supply) { $!event-supplier.Supply }
 
-#| Inicia a conexão assíncrona ao Gateway, negociando o OP_HELLO e enviando IDENTIFY/RESUME.
-#| Este método roda num bloco C<start react> que perpetua o ciclo de vida.
+#| Starts the asynchronous connection to the Gateway, negotiating OP_HELLO and sending IDENTIFY/RESUME.
+#| This method runs in a C<start react> block that perpetuates the lifecycle.
 method connect() {
     start {
         my $client = Cro::WebSocket::Client.new;
@@ -108,7 +108,7 @@ method connect() {
     }
 }
 
-#| Encerra o heartbeat, fecha a conexão WebSocket de forma segura e finaliza o Supplier de eventos.
+#| Stops the heartbeat, safely closes the WebSocket connection, and completes the event Supplier.
 method disconnect() {
     $!heartbeat.stop if $!heartbeat;
     $!ws-connection.close if $!ws-connection;
@@ -162,7 +162,7 @@ method !ws-send(Str $payload) {
     }
 }
 
-#| Usado internamente para testes: substitui o envio WebSocket direto por um mock injetado.
+#| Used internally for testing: replaces direct WebSocket sending with an injected mock.
 method set-mock-sender(&callback) {
     &!mock-sender = &callback;
 }

@@ -16,13 +16,13 @@ use Dusk::Model::User;
 
 unit class Dusk::Model::Message;
 
-#| O ID único (Snowflake) da mensagem.
+#| The unique ID (Snowflake) of the message.
 has Str $.id         is required;
-#| O ID do canal onde a mensagem foi enviada.
+#| The ID of the channel where the message was sent.
 has Str $.channel-id is required;
-#| O texto principal da mensagem.
+#| The main text content of the message.
 has Str $.content    is required;
-#| O objeto representando o autor da mensagem.
+#| The object representing the message author.
 has Dusk::Model::User $.author;
 
 method new(*%args) {
