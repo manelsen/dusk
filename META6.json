@@ -1,0 +1,22 @@
+{
+    "name": "Dusk",
+    "version": "0.1.0",
+    "description": "Discord REST API v10 wrapper in Raku.",
+    "authors": [
+        "micelio"
+    ],
+    "depends": [
+        "Cro::HTTP::Client",
+        "JSON::Fast"
+    ],
+    "provides": {
+        "Dusk::Model::Channel": "lib/Dusk/Model/Channel.rakumod",
+        "Dusk::Model::Message": "lib/Dusk/Model/Message.rakumod",
+        "Dusk::Model::Guild": "lib/Dusk/Model/Guild.rakumod",
+        "Dusk::Model::User": "lib/Dusk/Model/User.rakumod",
+        "Dusk::Rest::Client": "lib/Dusk/Rest/Client.rakumod",
+        "Dusk::Rest::Endpoint": "lib/Dusk/Rest/Endpoint.rakumod",
+        "Dusk::Rest::Route": "lib/Dusk/Rest/Route.rakumod"
+    },
+    "source-url": ""
+}

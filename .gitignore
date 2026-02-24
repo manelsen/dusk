@@ -1,0 +1,23 @@
+# Compiled
+.precomp/
+lib/.precomp/
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+fail_report.txt
+full_suite*.txt
+endpoints.txt
+endpoints_list.txt
