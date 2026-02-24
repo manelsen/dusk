@@ -6,8 +6,9 @@
   - *Critério de aceitação*: O cliente consegue autenticar usando um token de bot e fazer requisições HTTP (GET, POST, PUT, PATCH, DELETE) para os endpoints base da API.
 - **`RF-02` [Channel Messaging]**: O pacote deve permitir o envio de mensagens de texto para canais de texto do Discord.
   - *Critério de aceitação*: A função/metodo de envio de mensagem recebe um `channel_id` e o `content`, retornando o objeto da mensagem criada em caso de sucesso.
-- **`RF-03` [Gateway Connection]**: O pacote deve conseguir estabelecer uma conexão WebSocket com o Discord Gateway.
-  - *Critério de aceitação*: O cliente consegue conectar, enviar o payload de Identify e receber o evento `READY`.
+- **`RF-03` [Gateway Connection]**: ~~O pacote deve conseguir estabelecer uma conexão WebSocket com o Discord Gateway.~~
+  - *Critério de aceitação*: ~~O cliente consegue conectar, enviar o payload de Identify e receber o evento `READY`.~~
+  - **⚠️ WAIVER (2026-02-24)**: Requisito formalmente de-scoped de v0.1.x. Justificativa: o Gateway WebSocket exige um ciclo de design e implementação autônomo (heartbeat, reconnect, event dispatch, intents) incompatível com o escopo REST-only do MVP. Será tratado como RF-03 no ciclo CUEP do v0.2.x. Responsável: @manelsen.
 
 ## Non-Functional Requirements (RNF)
 
@@ -17,9 +18,11 @@
 
 ## Escopo e Fora de Escopo
 
-- **No Escopo**:
+- **No Escopo (v0.1.x)**:
   - Encapsulamento de chamadas REST (Users, Channels, Guilds básicos).
-  - Conexão e manutenção de heartbeat com o Gateway (WebSocket).
-  - Deserialização de eventos JSON para objetos Raku.
-- **Fora de Escopo**:
-  - Sharding automático e Voice Streaming de baixo nível (pois requerem fluxos complexos fora do REST estrito e Gateway base, que poderão ser separados estruturalmente depois). Embora todas as requisições REST da Discord API v10 sejam cobertas, as partes de processamento de áudio ao vivo ficam para componentes futuros.
+  - Deserialização de respostas JSON REST para objetos Raku.
+  - Rate limiting com retry automático.
+- **Fora de Escopo (v0.1.x → planejado para v0.2.x)**:
+  - Conexão e manutenção de heartbeat com o Gateway (WebSocket). → RF-03 waiver.
+  - Sharding automático e Voice Streaming de baixo nível.
+  - Interaction builders e UI Components.
