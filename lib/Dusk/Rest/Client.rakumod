@@ -1,5 +1,6 @@
 use Dusk::Rest::Route;
 use Dusk::Model::Channel;
+use Dusk::Error;
 use JSON::Fast;
 use Cro::HTTP::Client;
 
@@ -41,7 +42,18 @@ method request(Dusk::Rest::Route $route) {
 
         my $res;
         if &!mock-dispatcher {
-            $res = &!mock-dispatcher($route.method, $url, %headers, $route.has-body ?? $route.body !! Hash);
+            my $retries_left = 3;
+            my $done = False;
+            while $retries_left > 0 && !$done {
+                $res = &!mock-dispatcher($route.method, $url, %headers, $route.has-body ?? $route.body !! Hash);
+                if $res<status> == 429 {
+                    my $retry-after = $res<body><retry_after> // 1;
+                    await Promise.in($retry-after.Numeric);
+                    $retries_left--;
+                } else {
+                    $done = True;
+                }
+            }
         } else {
             my $cro-client = Cro::HTTP::Client.new(
                 headers => [
@@ -91,8 +103,6 @@ method request(Dusk::Rest::Route $route) {
         }
 
         if $res<status> == 200 {
-            # This routing to model is naive and hardcoded for the test. 
-            # A robust solution needs an endpoint-to-model mapper or `Route` returning the Model type.
             if $route.path ~~ / ^ \/channels\/ \d+ $ / {
                 my $content = $res<body> ~~ Positional ?? $res<body>[0] !! $res<body>;
                 my $channel = Dusk::Model::Channel.new(
@@ -105,8 +115,14 @@ method request(Dusk::Rest::Route $route) {
             } else {
                 $res<body>;
             }
+        } elsif $res<status> == 401 {
+            die Dusk::Error::Unauthorized.new();
+        } elsif $res<status> == 403 {
+            die Dusk::Error::Forbidden.new();
+        } elsif $res<status> == 404 {
+            die Dusk::Error::NotFound.new(path => $route.path);
         } else {
-            die "HTTP Error: $res<status>";
+            die Dusk::Error::APIError.new(status => $res<status>, body => $res<body>);
         }
     }
 }
