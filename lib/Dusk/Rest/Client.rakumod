@@ -7,16 +7,16 @@ use Cro::HTTP::Client;
 =begin pod
 =head1 Dusk::Rest::Client
 
-Client HTTP otimizado para a API REST do Discord (v10).
-Encapsula a montagem de rotas, injeção de Headers e tratamento automático
-de Rate Limits globais (429 Too Many Requests).
+Optimized HTTP Client for the Discord REST API (v10).
+Encapsulates route assembly, Header injection, and automatic handling
+of global Rate Limits (429 Too Many Requests).
 
 =head2 Usage
 
 use Dusk::Rest::Client;
 use Dusk::Rest::Route;
 
-my $client = Dusk::Rest::Client.new(token => 'SEU_TOKEN_AQUI');
+my $client = Dusk::Rest::Client.new(token => 'YOUR_TOKEN_HERE');
 my $route = Dusk::Rest::Route.new(method => 'GET', path => '/users/@me');
     
 my $user = await $client.request($route);
