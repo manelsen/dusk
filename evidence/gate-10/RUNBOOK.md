@@ -28,3 +28,38 @@
 3. Fork `Dusk`, adjust the `.rakumod` file by relaxing the Type Constraint (`Any`) or applying an explicit type coercion logic (`.Int`).
 4. Re-run `prove6 -l t/` to verify it fixes the issue.
 5. Deploy the hotfix.
+
+---
+
+## Consumer Troubleshooting Guide
+
+### Issue: `zef install Dusk` fails
+
+**Cause:** Integration tests (`t/05-integration.t`) compile `Cro::HTTP::Client` at `use` time. From a staging directory, the `.env` file is absent.
+**Fix:** Install with `zef install --force-test Dusk` or set `DISCORD_BOT_TOKEN` in your environment before installing.
+
+### Issue: `Could not find Dusk::Error` at runtime
+
+**Cause:** You are using a version older than 0.1.2 or `META6.json` does not list `Dusk::Error`.
+**Fix:** Update to latest: `zef upgrade Dusk`.
+
+### Issue: Methods return `Hash` instead of typed Model objects
+
+**Cause:** Only `/channels/:id` routes auto-deserialize to `Dusk::Model::Channel`. All other endpoints return raw `Hash` from the JSON response.
+**Fix:** Access fields via hash keys: `$result<id>`, `$result<username>`, etc. Typed deserialization for all endpoints is planned for v0.2.x.
+
+### Issue: Bot token not accepted / `Unauthorized` error
+
+**Cause:** Token is invalid, expired, or copied incorrectly.
+**Fix:**
+1. Verify token at `https://discord.com/developers/applications`
+2. Ensure you use the **Bot** token, not the OAuth2 client secret
+3. Check for leading/trailing whitespace in your `.env` file
+
+### Compatibility Matrix
+
+| Dependency | Minimum Version | Tested With |
+|-----------|----------------|-------------|
+| Raku | v6.d | 2024.09 |
+| `Cro::HTTP::Client` | any | 0.8.9 |
+| `JSON::Fast` | any | 0.19 |
