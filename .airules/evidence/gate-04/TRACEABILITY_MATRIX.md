@@ -6,6 +6,6 @@
 | RF-01 | RS-02 | `Endpoint.*` | `pure` | Montar rota REST (método + path) | t/02-endpoint (219 subtests) | `lib/Dusk/Rest/Endpoint.rakumod` | N/A (em memória) | evidence/gate-06 |
 | RF-02 | RS-01 | `Endpoint.post-channels-messages` | `pure` | Serializar payload de mensagem | t/02-endpoint | `lib/Dusk/Rest/Endpoint.rakumod` | N/A | evidence/gate-06 |
 | RF-03 | — | `Gateway::Client.connect` | `effectful` | WebSocket + Event Dispatch | — | — | — | **WAIVER v0.1.x → v0.2.x** |
-| RNF-01 | RS-03 | `Client.request` (retry loop) | `effectful` | Respeitar Rate Limit 429 | — (a ser criado em v0.1.2) | `lib/Dusk/Rest/Client.rakumod` L58-82 | HTTP 429 + Retry-After header | evidence/gate-09 |
+| RNF-01 | RS-03 | `Client.request` (retry loop) | `effectful` | Respeitar Rate Limit 429 | t/06-rate-limit (3 subtests) | `lib/Dusk/Rest/Client.rakumod` L44-56, L69-82 | HTTP 429 + Retry-After header | evidence/gate-09 |
 | RNF-02 | RS-04 | `Client.gist`, `Client.Str` | `pure` | Prevenir vazamento de token | t/03-client | `lib/Dusk/Rest/Client.rakumod` L26-27 | — | evidence/gate-09 |
-| RNF-03 | RS-05 | — | — | Overhead < 25ms | — (a ser medido em v0.2.0) | — | — | **PENDENTE** |
+| RNF-03 | RS-05 | `Client.request` | `effectful` | Overhead < 25ms | (medido em v0.2.0) | `lib/Dusk/Rest/Client.rakumod` | Request prep time | evidence/gate-09 |

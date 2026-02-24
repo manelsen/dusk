@@ -1,17 +1,24 @@
-# RELEASE_CHECKLIST
-## Dusk v0.1.0
+# Release Checklist — v0.2.0
 
-- [x] META6.json name, version, and provides map are correct
-- [x] All dependencies (`Cro::HTTP::Client`, `JSON::Fast`) installable via zef
-- [x] 226 unit/endpoint tests pass (`prove6 -l t/`)
-- [x] 3 integration tests pass with live Discord token
-- [x] No hardcoded secrets in source code
-- [x] Rate limiting with retry-after header handling implemented
-- [x] Token never exposed in `.gist` or `.Str` output (RNF-02)
-- [x] Observability signals documented
-- [x] Incident runbook written
-- [x] Functional-core / effectful-edge boundary preserved
+## Pre-Release Verification
+- [x] All tests pass (233/233)
+- [x] Traceability matrix complete — no orphan requirements
+- [x] RF-03 formally waived with justification and owner
+- [x] Performance benchmark: Avg 3.90ms (budget < 25ms) ✅
+- [x] Rate limit tests: 3 subtests passing ✅
+- [x] Error handling tests: 4 subtests (401, 403, 404, 500) ✅
+- [x] Token leak prevention verified ✅
+- [x] README.md, CHANGELOG.md, examples/ present
+- [x] Consumer troubleshooting guide in RUNBOOK.md
+- [x] Coverage/mutation waivers documented
+- [x] Quick Failure Heuristics checked — no stop-ship triggers
 
-## Decision
+## Release Decision
+- **Decision**: RELEASE
+- **Version**: 0.2.0
+- **Date**: 2026-02-24
+- **Owner**: @manelsen
 
-**RELEASE** — `Dusk:ver<0.1.0>` is approved for distribution.
+## Rollback Plan
+- `git revert HEAD` to return to v0.1.3 state
+- `zef uninstall Dusk && zef install Dusk@0.1.3`

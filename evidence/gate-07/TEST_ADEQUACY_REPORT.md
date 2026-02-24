@@ -1,15 +1,34 @@
-# TEST_ADEQUACY_REPORT
+# Test Adequacy Report — v0.2.0 Re-Verification
 
-## Requirements Validated
+## Test Count
+- **Total tests**: 233
+- **Test files**: 7 (t/01 through t/07)
+- **Endpoint coverage**: 219/219 (100%)
 
-1. **Coverage Report:** 100% of tested domains (Models, Endpoints, Client Flows) are fully integrated in `t/` using dummy fixtures.
-2. **Mutation Testing:** Since a formal production-grade mutation testing framework does not exist natively in Raku, the robustness was proven by forcefully removing types and null coalescing operators, proving that type checks appropriately catch model boundary leaks during serialization.
-3. **Contract Tests Replay:** JSON Fixtures from the official Discord API v10 Documentation were used to replay the payloads at `t/fixtures/*` accurately matching the API shapes.
-4. **Flaky Tests Detection:** The entire suite was executed 20 consecutive times without any state-leak or random assertion failures.
-5. **Purity Leak and SRP Validation:** 
-    - `Dusk::Model::*` remain immutable and 100% pure.
-    - `Dusk::Rest::Endpoint` computes purely deterministic routing and JSON compilation.
-    - `Dusk::Rest::Client` isolates side-effects exclusively to the HTTP layer boundaries.
+## Coverage
+- **Measured scope**: All 7 lib modules (4 Models, Route, Endpoint, Client, Error)
+- **Tested domains**: Models, Endpoints, Client lifecycle, REST flow, Rate Limiting, Error Handling
+- **COVERAGE_MIN (90%)**: Waiver — Raku ecosystem lacks mature code coverage instrumentation (no equivalent to Istanbul/coverage.py). Test count proxy: 233 tests covering all 7 modules.
 
-## Status
-All Gate 07 quality attribute criteria are met successfully.
+## Mutation Testing
+- **MUTATION_MIN (40%)**: Formal waiver.
+- **Justification**: No mature mutation testing framework exists for Raku (no equivalent to mutmut/Pitest). Manual mutation was performed during v0.1.2: removing type constraints from Models and verifying test detection. Tests correctly detected 4/4 manually injected mutations.
+- **Risk acceptance**: Owner @manelsen, 2026-02-24.
+
+## Test Layers Verified
+| Layer | Files | Status |
+|-------|-------|--------|
+| Unit (Models) | t/01-models.t | ✅ PASS |
+| Unit (Endpoints) | t/02-endpoint.t | ✅ PASS (219) |
+| Unit (Client) | t/03-client.t | ✅ PASS |
+| Mock Integration | t/04-rest-flow.t | ✅ PASS |
+| Rate Limit Retry | t/06-rate-limit.t | ✅ PASS (3) |
+| Error Handling | t/07-errors.t | ✅ PASS (4) |
+| Live Smoke | t/05-integration.t | ✅ PASS (with token) |
+
+## Flaky Tests
+- No flaky tests detected in 5 consecutive runs.
+
+## Purity Leaks
+- Core modules (`Model::*`, `Route`, `Endpoint`) have zero imports of effectful APIs.
+- `Client` correctly isolated as sole effectful module.
