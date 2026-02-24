@@ -115,6 +115,21 @@ method disconnect() {
     $!event-supplier.done;
 }
 
+#| Requests to join (or leave) a Voice Channel by sending an OP 4 Voice State Update.
+#| To leave a channel, pass a falsey value (like an empty string or Any) to $channel-id.
+method join-voice-channel(Str $guild-id, Str $channel-id, Bool :$mute = False, Bool :$deaf = False) {
+    my $payload = to-json({
+            op => Dusk::Gateway::Payload::OP_VOICE_STATE,
+            d  => {
+                guild_id   => $guild-id,
+                channel_id => $channel-id ?? $channel-id !! Any,
+                self_mute  => !!$mute,
+                self_deaf  => !!$deaf,
+            }
+    });
+    self!ws-send($payload);
+}
+
 method !start-heartbeat(Numeric $interval) {
     $!heartbeat = Dusk::Gateway::Heartbeat.new(
         interval      => $interval,

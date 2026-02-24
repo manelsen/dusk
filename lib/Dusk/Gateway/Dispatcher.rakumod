@@ -55,3 +55,5 @@ method on-channel-delete(--> Supply)         { self.on('CHANNEL_DELETE').map( { 
 method on-guild-member-add(--> Supply)       { self.on('GUILD_MEMBER_ADD').map( { Dusk::Event::Events::GuildMemberAdd.new(raw => $_) }) }
 method on-guild-member-remove(--> Supply)    { self.on('GUILD_MEMBER_REMOVE').map( { Dusk::Event::Events::GuildMemberRemove.new(raw => $_) }) }
 method on-guild-member-update(--> Supply)    { self.on('GUILD_MEMBER_UPDATE') } # Placeholder for full model
+method on-voice-state-update(--> Supply)     { self.on('VOICE_STATE_UPDATE').map( { Dusk::Event::Events::VoiceStateUpdate.new(raw => $_) }) }
+method on-voice-server-update(--> Supply)    { self.on('VOICE_SERVER_UPDATE').map( { Dusk::Event::Events::VoiceServerUpdate.new(raw => $_) }) }

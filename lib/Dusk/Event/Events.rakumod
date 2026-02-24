@@ -113,3 +113,20 @@ class TypingStart does Dusk::Event {
     method user-id(--> Str) { $!raw<user_id> }
     method timestamp(--> Int) { $!raw<timestamp> }
 }
+
+#| Emitted when someone joins/leaves/moves voice channels. For the bot, provides the session_id for Voice connections.
+class VoiceStateUpdate does Dusk::Event {
+    method session-id(--> Str) { $!raw<session_id> // '' }
+    method user-id(--> Str) { $!raw<user_id> }
+    method channel-id(--> Str) { $!raw<channel_id> // '' }
+    method guild-id(--> Str) { $!raw<guild_id> // '' }
+    method deaf(--> Bool) { ?($!raw<deaf> // False) }
+    method mute(--> Bool) { ?($!raw<mute> // False) }
+}
+
+#| Emitted after the bot sends OP 4. Provides the endpoint URL and token needed to connect to the Voice WebSocket.
+class VoiceServerUpdate does Dusk::Event {
+    method token(--> Str) { $!raw<token> }
+    method guild-id(--> Str) { $!raw<guild_id> }
+    method endpoint(--> Str) { $!raw<endpoint> // '' }
+}
