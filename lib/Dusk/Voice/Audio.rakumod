@@ -38,7 +38,7 @@ sub parse-ogg(Buf $data, Supplier $supplier, Int $page-count is rw --> Buf) {
         last unless $found;
 
         # Trim everything before the magic
-        $buf = Buf.new($buf.subbuf($pos).list) if $pos > 0;
+        $buf = $buf.subbuf($pos) if $pos > 0;
         last if $buf.elems < 27;
 
         my $n-segs     = $buf[26];
@@ -46,7 +46,7 @@ sub parse-ogg(Buf $data, Supplier $supplier, Int $page-count is rw --> Buf) {
         last if $buf.elems < $hdr-size;
 
         # Segment table (lacing values)
-        my @lace = $buf[27 ..^ $hdr-size];
+        my @lace = $buf.subbuf(27, $n-segs).list;
         my $body-size = [+] @lace;
         last if $buf.elems < $hdr-size + $body-size;
 
@@ -63,15 +63,13 @@ sub parse-ogg(Buf $data, Supplier $supplier, Int $page-count is rw --> Buf) {
                 $body-offset += $lace-val;
                 if $lace-val < 255 {
                     # End of packet
-                    $supplier.emit(Buf.new($pkt-buf.list)) if $pkt-buf.elems > 0;
+                    $supplier.emit($pkt-buf) if $pkt-buf.elems > 0;
                     $pkt-buf = Buf.new;
                 }
             }
-            # Any remainder in $pkt-buf continues into the next page (lacing boundary);
-            # we discard it here as it will be part of the next page's first segment.
         }
 
-        $buf = Buf.new($buf.subbuf($hdr-size + $body-size).list);
+        $buf = $buf.subbuf($hdr-size + $body-size);
     }
 
     $buf;
