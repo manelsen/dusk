@@ -5,67 +5,67 @@ use Dusk::Interaction::Response;
 use Dusk::Rest::Endpoint;
 use JSON::Fast;
 
-# Configuração (Substitua pelos seus dados)
+# Configuration (Replace with your own data)
 my $token  = %*ENV<DISCORD_BOT_TOKEN> // die "Missing DISCORD_BOT_TOKEN";
 my $app-id = %*ENV<DISCORD_APP_ID>    // die "Missing DISCORD_APP_ID";
 
 my $client = Dusk::Client.new(token => $token);
 
 # ==============================================================================
-# 1. REGISTRO DO COMANDO (Rodar apenas uma vez ou quando mudar a estrutura)
+# 1. COMMAND REGISTRATION (Run only once or when the structure changes)
 # ==============================================================================
 sub register-command() {
-    say "[*] Construindo o Slash Command '/eco'...";
+    say "[*] Building the '/echo' Slash Command...";
     
     my $cmd = Dusk::Interaction::Command.new(
-        name        => 'eco',
-        description => 'Repete o que você disser',
+        name        => 'echo',
+        description => 'Repeats what you say',
     ).add-option(
-        name        => 'mensagem',
-        description => 'O texto que o bot vai repetir',
+        name        => 'message',
+        description => 'The text that the bot will repeat',
         type        => OPTION_STRING,
         required    => True,
     );
 
-    # Cadastra o comando globalmente no Discord via API REST
+    # Register the command globally on Discord via the REST API
     my $route = Dusk::Rest::Endpoint.post-applications-commands(
         application-id => $app-id,
         body           => $cmd.to-hash
     );
 
-    say "[*] Enviando payload para a API do Discord...";
+    say "[*] Sending payload to the Discord API...";
     my $res = await $client.rest.request($route);
-    say "[+] Comando registrado com sucesso! (ID: $res<id>)";
+    say "[+] Command registered successfully! (ID: $res<id>)";
 }
 
 # ==============================================================================
-# 2. OUVINDO E RESPONDENDO (O Loop Principal do Bot)
+# 2. LISTENING AND RESPONDING (The Bot's Main Loop)
 # ==============================================================================
 sub start-bot() {
-    say "[*] Conectando ao Gateway do Discord...";
+    say "[*] Connecting to the Discord Gateway...";
     
     react {
-        # Ouve todos os eventos de interação (Slash Commands, Botões, etc)
+        # Listen to all interaction events (Slash Commands, Buttons, etc.)
         whenever $client.dispatcher.on-interaction-create -> $interaction {
             
-            # Garante que é um Slash Command (type 2)
+            # Ensure it is a Slash Command (type 2)
             if $interaction.type == 2 {
                 my $cmd-name = $interaction.data<name>;
-                say "[Gateway] Usuário usou o comando: /$cmd-name";
+                say "[Gateway] User used command: /$cmd-name";
                 
-                # Roteia para a lógica do '/eco'
-                if $cmd-name eq 'eco' {
-                    # Extrai o valor do argumento "mensagem"
+                # Route to the '/echo' logic
+                if $cmd-name eq 'echo' {
+                    # Extract the value of the "message" argument
                     my $options = $interaction.data<options>[0];
-                    my $texto-usuario = $options<value>;
+                    my $user-text = $options<value>;
 
-                    # Constrói a resposta oficial
+                    # Build the official response
                     my $response = Dusk::Interaction::Response.reply(
-                        content => "Você disse: **$texto-usuario**",
-                        ephemeral => False # Se True, só o usuário que digitou vê a resposta
+                        content => "You said: **$user-text**",
+                        ephemeral => False # If True, only the user who typed it sees the response
                     );
 
-                    # Envia de volta pro Discord
+                    # Send back to Discord
                     my $route = Dusk::Rest::Endpoint.post-interactions-callback(
                         interaction-id    => $interaction.id,
                         interaction-token => $interaction.token,
@@ -73,20 +73,20 @@ sub start-bot() {
                     );
                     
                     await $client.rest.request($route);
-                    say "[+] Resposta enviada!";
+                    say "[+] Response sent!";
                 }
             }
         }
         
         whenever $client.dispatcher.on-ready -> $ready {
-            say "[+] Bot online como " ~ $ready.user.username;
+            say "[+] Bot online as " ~ $ready.user.username;
         }
     }
 }
 
-# Descomente para registrar o comando na sua conta de Bot
+# Uncomment to register the command on your Bot account
 # await register-command();
 
-# Inicia a escuta infinita
+# Start infinite listening
 await $client.connect();
 start-bot();

@@ -3,16 +3,16 @@
 # Spec: https://discord.com/developers/docs/topics/voice-connections
 # Voice Gateway v8 | aead_aes256_gcm_rtpsize | OP5 Speaking | NativeCall UDP
 
+# --- POSIX UDP via NativeCall -------------------------------------------------
+# IO::Socket::INET does TCP connect() even with :udp in Rakudo.
+# We use direct POSIX syscalls.
+
 use lib 'lib';
 use JSON::Fast;
 use Cro::HTTP::Client;
 use Cro::WebSocket::Client;
 use Dusk::Voice::Audio;
 use NativeCall;
-
-# ─── POSIX UDP via NativeCall ─────────────────────────────────────────────────
-# IO::Socket::INET faz connect() TCP mesmo com :udp no Rakudo.
-# Usamos syscalls POSIX diretos.
 
 sub c-socket(int32, int32, int32 --> int32)       is symbol('socket')    is native { * }
 sub c-close(int32 --> int32)                       is symbol('close')     is native { * }
@@ -52,7 +52,7 @@ sub udp-recv(int32 $fd, Int $n = 74 --> Buf) {
     $got > 0 ?? Buf.new($buf.subbuf(0, $got).list) !! Buf.new;
 }
 
-# ─── libsodium — AES-256-GCM (aead_aes256_gcm_rtpsize) ──────────────────────
+# --- libsodium — AES-256-GCM (aead_aes256_gcm_rtpsize) ----------------------
 # Nonce: 4-byte big-endian incrementing counter, appended at end of packet
 # Packet: RTP-header(12) ++ GCM-ciphertext(N+MACBYTES) ++ nonce(4)
 
@@ -107,15 +107,15 @@ sub encrypt-aes256gcm(
     Buf.new(|$header.list, |$cipher.list, $nonce[0], $nonce[1], $nonce[2], $nonce[3]);
 }
 
-# ─── Config ───────────────────────────────────────────────────────────────────
-my $token      = %*ENV<DISCORD_BOT_TOKEN> or die "DISCORD_BOT_TOKEN ausente";
-my $guild-id   = %*ENV<GUILD_ID>          or die "GUILD_ID ausente";
-my $channel-id = %*ENV<VOICE_CHANNEL_ID>  or die "VOICE_CHANNEL_ID ausente";
+# --- Config -------------------------------------------------------------------
+my $token      = %*ENV<DISCORD_BOT_TOKEN> or die "DISCORD_BOT_TOKEN missing";
+my $guild-id   = %*ENV<GUILD_ID>          or die "GUILD_ID missing";
+my $channel-id = %*ENV<VOICE_CHANNEL_ID>  or die "VOICE_CHANNEL_ID missing";
 
 say "=== Dusk Voice Engine — Smoke Test ===\n";
 
-# ─── 1. User ID ───────────────────────────────────────────────────────────────
-say "[1] Obtendo ID do bot...";
+# --- 1. User ID ---------------------------------------------------------------
+say "[1] Getting bot ID...";
 my $me = from-json(await (await Cro::HTTP::Client.new(
             base-uri => 'https://discord.com',
             headers  => [Authorization => "Bot $token"],
@@ -123,8 +123,8 @@ my $me = from-json(await (await Cro::HTTP::Client.new(
 my $user-id = $me<id>.Int;
 say "    Bot: $me<username> (ID: $user-id)";
 
-# ─── 2. Gateway principal → VOICE_SERVER_UPDATE ───────────────────────────────
-say "\n[2] Gateway principal...";
+# --- 2. Main Gateway → VOICE_SERVER_UPDATE ------------------------------------
+say "\n[2] Main Gateway...";
 my $gw    = await Cro::WebSocket::Client.new.connect('wss://gateway.discord.gg/?v=10&encoding=json');
 my $gw-ch = Channel.new;
 start { react { whenever $gw-ch -> $p { $gw.send($p) } } }
@@ -162,78 +162,78 @@ react {
                     when 'VOICE_SERVER_UPDATE' {
                         $voice-token    = $d<d><token>;
                         $voice-endpoint = $d<d><endpoint>.subst(/^'wss://'/, '');
-                            say "    VOICE_SERVER_UPDATE endpoint=$voice-endpoint";
-                            $voice-got.keep if $voice-got.status == Planned;
-                            done;
-                            }
-                            }
-                            }
-                            }
-                            }
-                            whenever Promise.in(12) { say "    TIMEOUT"; done }
-                            }
-                            die "Sem VOICE_SERVER_UPDATE" unless $voice-got.status == Kept;
+                        say "    VOICE_SERVER_UPDATE endpoint=$voice-endpoint";
+                        $voice-got.keep if $voice-got.status == Planned;
+                        done;
+                    }
+                }
+            }
+        }
+    }
+    whenever Promise.in(12) { say "    TIMEOUT"; done }
+}
+die "Missing VOICE_SERVER_UPDATE" unless $voice-got.status == Kept;
 
-                            # ─── 3-5. Voice Gateway v8 ────────────────────────────────────────────────────
-                            say "\n[3-5] Voice Gateway v8...";
-                            my $vgw   = await Cro::WebSocket::Client.new.connect("wss://{$voice-endpoint}/?v=8");
-                            my $vch   = Channel.new;
-                            start { react { whenever $vch -> $p { $vgw.send($p) } } }
+# --- 3-5. Voice Gateway v8 ----------------------------------------------------
+say "\n[3-5] Voice Gateway v8...";
+my $vgw   = await Cro::WebSocket::Client.new.connect("wss://{$voice-endpoint}/?v=8");
+my $vch   = Channel.new;
+start { react { whenever $vch -> $p { $vgw.send($p) } } }
 
-                            my ($ssrc, $server-ip, $server-port, $secret-key, $enc-mode);
-                            my $vs-done  = Promise.new;
-                            my $vseq-ack = 0;
+my ($ssrc, $server-ip, $server-port, $secret-key, $enc-mode);
+my $vs-done  = Promise.new;
+my $vseq-ack = 0;
 
-                            react {
-                            whenever $vgw.messages -> $msg {
-                            my $d = from-json(await $msg.body-text);
-                            $vseq-ack = $d<seq> if $d<seq>;
-                            given $d<op> {
-                            when 8 {  # HELLO
-                            my $iv = $d<d><heartbeat_interval>;
-                            say "    Voice HELLO ({$iv}ms)";
-                            start { loop { sleep $iv/1000;
-                            $vch.send(to-json({op=>3, d=>{t=>(now*1000).Int, seq_ack=>$vseq-ack}})) } }
-                            $vch.send(to-json({op=>0, d=>{
-                            server_id  => $guild-id,
-                            user_id    => ~$user-id,
-                            session_id => ($voice-session-id // $session-id),
-                            token      => $voice-token,
-                            }}));
-                            say "    OP 0 IDENTIFY";
-                            }
-                            when 2 {  # READY → UDP Discovery
-                            $ssrc        = $d<d><ssrc>;
-                            $server-ip   = $d<d><ip>;
-                            $server-port = $d<d><port>;
-                            my @modes    = @($d<d><modes>);
-                            $enc-mode    = @modes[0];  # usar o primeiro modo oferecido
-                            say "    OP 2 READY — SSRC=$ssrc ip=$server-ip:$server-port";
-                            say "    Modos: " ~ @modes.join(', ');
-                            say "    Modo escolhido: $enc-mode";
+react {
+    whenever $vgw.messages -> $msg {
+        my $d = from-json(await $msg.body-text);
+        $vseq-ack = $d<seq> if $d<seq>;
+        given $d<op> {
+            when 8 {  # HELLO
+                my $iv = $d<d><heartbeat_interval>;
+                say "    Voice HELLO ({$iv}ms)";
+                start { loop { sleep $iv/1000;
+                $vch.send(to-json({op=>3, d=>{t=>(now*1000).Int, seq_ack=>$vseq-ack}})) } }
+                $vch.send(to-json({op=>0, d=>{
+                    server_id  => $guild-id,
+                    user_id    => ~$user-id,
+                    session_id => ($voice-session-id // $session-id),
+                    token      => $voice-token,
+                }}));
+                say "    OP 0 IDENTIFY";
+            }
+            when 2 {  # READY → UDP Discovery
+                $ssrc        = $d<d><ssrc>;
+                $server-ip   = $d<d><ip>;
+                $server-port = $d<d><port>;
+                my @modes    = @($d<d><modes>);
+                $enc-mode    = @modes[0];  # use the first offered mode
+                say "    OP 2 READY — SSRC=$ssrc ip=$server-ip:$server-port";
+                say "    Modes: " ~ @modes.join(', ');
+                say "    Selected Mode: $enc-mode";
 
-                            start {
-                            CATCH { default { say "ERRO UDP: " ~ .message } }
-                            my $fd  = new-udp-fd();
-                            my $pkt = Buf.new(0 xx 74);
-                            $pkt[0]=0; $pkt[1]=1; $pkt[2]=0; $pkt[3]=70;
-                            $pkt[4]=($ssrc+>24)+&0xFF; $pkt[5]=($ssrc+>16)+&0xFF;
-                            $pkt[6]=($ssrc+>8)+&0xFF;  $pkt[7]=$ssrc+&0xFF;
-                            say "    IP Discovery...";
-                            udp-send($fd, $pkt, $server-ip, $server-port);
-                            my $resp = udp-recv($fd, 74);
-                            c-close($fd);
-                            if $resp.elems >= 74 {
-                            my $pub-ip   = Buf.new($resp[8..71].grep({$_!=0}).list).decode('ascii');
+                start {
+                    CATCH { default { say "UDP ERROR: " ~ .message } }
+                    my $fd  = new-udp-fd();
+                    my $pkt = Buf.new(0 xx 74);
+                    $pkt[0]=0; $pkt[1]=1; $pkt[2]=0; $pkt[3]=70;
+                    $pkt[4]=($ssrc+>24)+&0xFF; $pkt[5]=($ssrc+>16)+&0xFF;
+                    $pkt[6]=($ssrc+>8)+&0xFF;  $pkt[7]=$ssrc+&0xFF;
+                    say "    IP Discovery...";
+                    udp-send($fd, $pkt, $server-ip, $server-port);
+                    my $resp = udp-recv($fd, 74);
+                    c-close($fd);
+                    if $resp.elems >= 74 {
+                        my $pub-ip   = Buf.new($resp[8..71].grep({$_!=0}).list).decode('ascii');
                         my $pub-port = ($resp[72]+<8)+|$resp[73];
-                        say "    IP público: $pub-ip:$pub-port";
+                        say "    Public IP: $pub-ip:$pub-port";
                         $vch.send(to-json({op=>1, d=>{
                                         protocol=>'udp',
                                         data=>{address=>$pub-ip, port=>$pub-port, mode=>$enc-mode}
                         }}));
                         say "    OP 1 SELECT_PROTOCOL";
                     } else {
-                        say "    Discovery falhou ({$resp.elems}B)";
+                        say "    Discovery failed ({$resp.elems}B)";
                     }
                 }
             }
@@ -249,10 +249,10 @@ react {
     }
     whenever Promise.in(25) { say "    TIMEOUT Voice handshake"; done }
 }
-die "SESSION_DESCRIPTION não recebida" unless $vs-done.status == Kept;
+die "SESSION_DESCRIPTION not received" unless $vs-done.status == Kept;
 
-# ─── 6. Tocar áudio ───────────────────────────────────────────────────────────
-say "\n[6] Enviando áudio...";
+# --- 6. Play Audio ------------------------------------------------------------
+say "\n[6] Sending audio...";
 $vch.send(to-json({op=>5, d=>{speaking=>1, delay=>0, ssrc=>$ssrc}}));
 say "    OP 5 SPEAKING ✅";
 
@@ -281,5 +281,5 @@ c-close($play-fd);
 $vch.send(to-json({op=>5, d=>{speaking=>0, delay=>0, ssrc=>$ssrc}}));
 $sine.unlink;
 
-say "\n✅ $frames frames Opus enviados ({($frames*0.02).fmt('%.1f')}s)";
-say "   Se ouviu 440Hz → Voice Engine funcional ponta a ponta! 🎺";
+say "\n✅ $frames Opus frames sent ({($frames*0.02).fmt('%.1f')}s)";
+say "   If you heard 440Hz → Voice Engine functional end-to-end! 🎺";

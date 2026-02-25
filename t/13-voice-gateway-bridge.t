@@ -43,11 +43,12 @@ subtest 'Dispatcher Routing VOICE_STATE_UPDATE', {
     my $event-seen = False;
     $dispatcher.on-voice-state-update.tap(-> $event {
         isa-ok $event, Dusk::Event::Events::VoiceStateUpdate, "Event mapped to correct class";
-        is $event.session-id, 'session_xyz_789', "Parsed session_id";
-        is $event.user-id, 'user_123', "Parsed user_id";
-        is $event.channel-id, 'channel_456', "Parsed channel_id";
-        is $event.deaf, False, "Parsed deaf param";
-        is $event.mute, True, "Parsed mute param";
+        my $vs = $event.voice-state;
+        is $vs.session-id, 'session_xyz_789', "Parsed session_id";
+        is $vs.user-id, 'user_123', "Parsed user_id";
+        is $vs.channel-id, 'channel_456', "Parsed channel_id";
+        nok $vs.deaf, "Parsed deaf param";
+        ok $vs.mute, "Parsed mute param";
         $event-seen = True;
     });
 

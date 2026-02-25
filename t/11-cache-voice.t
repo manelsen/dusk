@@ -128,10 +128,9 @@ subtest 'Cache: Disabled configs' => {
     $cache.stop;
 };
 
-subtest 'Voice::Client stub raises error' => {
+subtest 'Voice::Client initialization' => {
     use Dusk::Voice::Client;
 
-    my $voice = Dusk::Voice::Client.new(guild-id => '1', channel-id => '2');
+    my $voice = Dusk::Voice::Client.new(guild-id => '1', channel-id => '2', user-id => 123);
     nok $voice.is-connected, 'Not connected by default';
-    dies-ok { $voice.connect }, 'connect() dies with stub message';
 };
