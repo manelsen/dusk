@@ -21,3 +21,9 @@ fail_report.txt
 full_suite*.txt
 endpoints.txt
 endpoints_list.txt
+
+# Asgard Protocol & AI Artifacts
+.asgard/
+.airules/
+evidence/
+GEMINI.md
