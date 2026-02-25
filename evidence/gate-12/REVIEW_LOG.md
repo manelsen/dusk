@@ -2,7 +2,7 @@
 
 ## Review Context
 - **Date**: 2026-02-24
-- **Mode**: Self-review (R2 allows self per CUEP §12 as remediation review)
+- **Mode**: Self-review (R2 allows self per Asgard §12 as remediation review)
 - **Scope**: Re-verification of Gates 04, 07, 09, 11, 12 after v0.1.1–v0.1.3 remediation
 
 ## Findings
@@ -47,7 +47,7 @@
 
 **Verdict: PASS**
 
-### Quick Failure Heuristics (CUEP §Heuristics)
+### Quick Failure Heuristics (Asgard §Heuristics)
 | Heuristic | Status |
 |-----------|--------|
 | Tests pass but key path is mock/stub in prod | ✅ Clear — mock only in tests |

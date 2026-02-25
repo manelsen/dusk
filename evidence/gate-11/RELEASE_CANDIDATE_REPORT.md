@@ -29,7 +29,7 @@ Benchmark: 100 mock requests
 - Effectful edge (Client) is sole module with network I/O.
 - Dependency direction: Edge → Core. No reverse dependencies found.
 
-## CUEP Compliance
+## Asgard Compliance
 - All 22 artifacts present or formally waived.
 - Traceability matrix complete with zero orphan requirements.
 - RF-03 (Gateway) formally waived with owner sign-off.
