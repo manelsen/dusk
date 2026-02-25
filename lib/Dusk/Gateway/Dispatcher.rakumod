@@ -19,6 +19,7 @@ say "Guild: $data<name>";
 =end pod
 
 use Dusk::Gateway::Payload;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Gateway::Dispatcher;
 

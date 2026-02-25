@@ -4,6 +4,8 @@ use Dusk::Error;
 use JSON::Fast;
 use Cro::HTTP::Client;
 
+use Dusk::Util::JSONTraits;
+
 unit class Dusk::Rest::Client;
 
 has Str $!token;
@@ -102,10 +104,12 @@ method request(Dusk::Rest::Route $route) {
         if $res<status> ~~ 200..299 {
             if $route.target-model.^name ne 'Mu' && $res<body> {
                 my $model = $route.target-model;
+                my &mapper = { $model.from-json($_) };
+
                 if $res<body> ~~ Positional {
-                    $res<body>.map({ $model.new(|$_) }).List;
+                    $res<body>.map(&mapper).List;
                 } else {
-                    $model.new(|$res<body>);
+                    &mapper($res<body>);
                 }
             } else {
                 $res<body>;
