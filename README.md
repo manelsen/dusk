@@ -100,7 +100,7 @@ prove6 -l t/05-integration.t
 | Version | Content |
 |---------|---------|
 | `0.1.x` | REST API wrapper (current) |
-| `0.2.0` | CUEP re-gate closure |
+| `0.2.0` | Asgard re-gate closure |
 | `0.2.1` | Gateway WebSocket (events, heartbeat) |
 | `0.2.2` | Slash Commands, Buttons, Modals |
 | `0.2.3` | Cache, connection pooling, Voice stub |

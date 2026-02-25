@@ -57,4 +57,4 @@ All notable changes to this project will be documented in this file.
 - Token leak prevention (`.gist`, `.Str` masking)
 - 19 JSON fixtures (9 gateway, 10 REST)
 - 229 tests across 5 test files
-- Full CUEP evidence pack (Gates 00-12)
+- Full Asgard evidence pack (Gates 00-12)
