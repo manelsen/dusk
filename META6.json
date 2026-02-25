@@ -1,7 +1,7 @@
 {
     "name": "Dusk",
-    "version": "0.2.7",
-    "description": "Discord REST API v10 wrapper in Raku.",
+    "version": "0.3.0",
+    "description": "Discord REST API v10 wrapper in Raku, with Gateway and Voice support.",
     "authors": [
         "micelio"
     ],
