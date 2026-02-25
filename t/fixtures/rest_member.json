@@ -1,0 +1,20 @@
+[
+    {
+        "user": {
+            "id": "383221796700291082",
+            "username": "micelio",
+            "discriminator": "0",
+            "avatar": "abcdef123456"
+        },
+        "nick": "The Dev",
+        "avatar": null,
+        "roles": ["1470125745056518333", "1292918902988345414"],
+        "joined_at": "2026-02-01T12:00:00.000000+00:00",
+        "premium_since": null,
+        "deaf": false,
+        "mute": false,
+        "flags": 0,
+        "pending": false,
+        "permissions": "2248473465835073"
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "user_id": "383221796700291082",
+        "session_id": "a-voice-session-id",
+        "deaf": false,
+        "mute": false,
+        "self_deaf": true,
+        "self_mute": true,
+        "self_video": false,
+        "suppress": false,
+        "channel_id": "1212124713271304247",
+        "guild_id": "1212124712629440612"
+    }
+]

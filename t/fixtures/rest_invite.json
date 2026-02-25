@@ -1,0 +1,14 @@
+[
+    {
+        "code": "dusk-test",
+        "guild": {
+            "id": "1212124712629440612",
+            "name": "Test Server"
+        },
+        "channel": {
+            "id": "1212124713271304246",
+            "name": "general",
+            "type": 0
+        }
+    }
+]

@@ -1,0 +1,13 @@
+[
+    {
+        "id": "1470119116374282333",
+        "name": "Dusk Bot",
+        "description": "The Raku library for Discord",
+        "bot_public": true,
+        "owner": {
+            "id": "383221796700291082",
+            "username": "micelio",
+            "discriminator": "0"
+        }
+    }
+]

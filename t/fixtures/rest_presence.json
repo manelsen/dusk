@@ -1,0 +1,14 @@
+[
+    {
+        "user": { "id": "383221796700291082" },
+        "status": "online",
+        "activities": [
+            {
+                "name": "Dusk Development",
+                "type": 0,
+                "state": "Coding Raku"
+            }
+        ],
+        "client_status": { "desktop": "online" }
+    }
+]
