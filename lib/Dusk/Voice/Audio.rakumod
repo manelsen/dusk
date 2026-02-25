@@ -3,7 +3,10 @@ use Dusk::Error;
 unit class Dusk::Voice::Audio;
 
 #| Path to the audio source file. Use '-' for stdin.
-has Str $.source     is required;
+has Str $.source      is required;
+
+#| Path to the ffmpeg binary. Override in tests to simulate absence.
+has Str $.ffmpeg-path = 'ffmpeg';
 
 #| Number of PCM samples per 20ms frame (Discord standard: 960 @ 48kHz).
 has Int $.frame-size = 960;
@@ -18,8 +21,14 @@ method frames(--> Supply) {
     my $supplier = Supplier.new;
 
     start {
+        # For raw PCM files we must tell ffmpeg the input format explicitly.
+        my @input-flags = $!source.ends-with('.raw')
+        ?? ('-f', 's16le', '-ar', '48000', '-ac', ~$!channels)
+        !! ();
+
         my $proc = Proc::Async.new(
-            'ffmpeg',
+            $!ffmpeg-path, '-y',
+            |@input-flags,
             '-i', $!source,
             '-ac', ~$!channels,
             '-ar', '48000',

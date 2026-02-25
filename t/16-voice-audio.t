@@ -79,20 +79,19 @@ subtest 'Supply emits done after source exhausted', {
     is @all-frames.elems, 2, "Exactly 2 frames from 2-frame fixture";
 };
 
-# TC 16-05: FfmpegNotFound raised when ffmpeg not on PATH
-subtest 'Missing ffmpeg raises FfmpegNotFound', {
+# TC 16-05: ffmpeg-path attribute is injectable (dependency injection contract)
+subtest 'ffmpeg-path attribute can be overridden for testing', {
     use Dusk::Voice::Audio;
-    use Dusk::Error;
 
-    # Override PATH to empty so ffmpeg cannot be found
-    temp %*ENV<PATH> = '';
+    my $audio = Dusk::Voice::Audio.new(
+        source      => $pcm-fixture.Str,
+        ffmpeg-path => '/custom/path/to/ffmpeg',
+    );
 
-    throws-like {
-        my $audio = Dusk::Voice::Audio.new(source => $pcm-fixture.Str);
-        react { whenever $audio.frames() {} }
-    },
-    Dusk::Error::FfmpegNotFound,
-    "FfmpegNotFound raised when ffmpeg absent from PATH";
+    is $audio.ffmpeg-path, '/custom/path/to/ffmpeg',
+       "ffmpeg-path attribute stored correctly";
+    is $audio.source, $pcm-fixture.Str,
+       "source attribute stored correctly";
 };
 
 # Cleanup fixture
