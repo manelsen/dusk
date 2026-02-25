@@ -1,24 +1,21 @@
-use v6.d;
-use Dusk::Model::User;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::AuditLog;
 
 has @.audit-log-entries;
-has Dusk::Model::User @.users;
+has @.users;
 has @.webhooks;
 has @.integrations;
 has @.threads;
 has @.application-commands;
 
-method new(*%args) {
-    my Dusk::Model::User @users = (%args<users> // []).map({ Dusk::Model::User.new(|$_) });
-    
-    self.bless(
-        audit-log-entries    => @(%args<audit_log_entries> // []),
-        users                => @users,
-        webhooks             => @(%args<webhooks> // []),
-        integrations         => @(%args<integrations> // []),
-        threads              => @(%args<threads> // []),
-        application-commands => @(%args<application_commands> // []),
-    )
+method new(*%args) { self.bless(|%args) }
+
+method from-json($data) { self.new(|jmap($data)) }
+
+submethod TWEAK(:$users) {
+    if $users && $users ~~ Positional {
+        require Dusk::Model::User;
+        @!users = $users.map({ $_ ~~ Dusk::Model::User ?? $_ !! ::('Dusk::Model::User').from-json($_) });
+    }
 }

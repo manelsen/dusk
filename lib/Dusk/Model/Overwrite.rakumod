@@ -1,17 +1,12 @@
-use v6.d;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Overwrite;
 
-has Str $.id   is required;
-has Int $.type is required;
-has Str $.allow;
-has Str $.deny;
+has Str  $.id    = '';
+has Int  $.type  = 0;
+has Str  $.allow = '0';
+has Str  $.deny  = '0';
 
-method new(*%args) {
-    self.bless(
-        id    => ~(%args<id> // ''),
-        type  => (%args<type> // 0).Int,
-        allow => ~(%args<allow> // '0'),
-        deny  => ~(%args<deny> // '0'),
-    )
-}
+method new(*%args) { self.bless(|%args) }
+
+method from-json($data) { self.new(|jmap($data)) }

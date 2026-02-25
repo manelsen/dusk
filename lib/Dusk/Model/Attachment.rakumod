@@ -1,17 +1,18 @@
 use v6.d;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Attachment;
 
-has Str $.id           is required;
-has Str $.filename     is required;
-has Str $.description;
-has Str $.content-type;
-has Int $.size;
-has Str $.url;
-has Str $.proxy-url;
-has Int $.height;
-has Int $.width;
-has Bool $.ephemeral;
+has $.id           is required;
+has $.filename     is required;
+has $.description;
+has $.content-type;
+has $.size;
+has $.url;
+has $.proxy-url;
+has $.height;
+has $.width;
+has $.ephemeral;
 
 method new(*%args) {
     self.bless(

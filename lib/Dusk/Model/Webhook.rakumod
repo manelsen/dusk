@@ -1,36 +1,27 @@
-use v6.d;
-use Dusk::Model::User;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Webhook;
 
-has Str $.id           is required;
-has Int $.type         is required;
-has Str $.guild-id;
-has Str $.channel-id;
-has Dusk::Model::User $.user;
-has Str $.name;
-has Str $.avatar;
-has Str $.token;
-has Str $.application-id;
-has %.source-guild;
-has %.source-channel;
-has Str $.url;
+has Str  $.id             = '';
+has Int  $.type           = 1;
+has Str  $.guild-id       = '';
+has Str  $.channel-id     = '';
+has      $.user; # Dusk::Model::User
+has Str  $.name           = '';
+has Str  $.avatar         = '';
+has Str  $.token          = '';
+has Str  $.application-id = '';
+has      %.source-guild;
+has      %.source-channel;
+has Str  $.url            = '';
 
-method new(*%args) {
-    my $user = %args<user> ?? Dusk::Model::User.new(|%args<user>) !! Dusk::Model::User;
+method new(*%args) { self.bless(|%args) }
 
-    self.bless(
-        id             => ~(%args<id> // ''),
-        type           => (%args<type> // 1).Int,
-        guild-id       => %args<guild_id> // '',
-        channel-id     => %args<channel_id> // '',
-        user           => $user,
-        name           => %args<name> // '',
-        avatar         => %args<avatar> // '',
-        token          => %args<token> // '',
-        application-id => %args<application_id> // '',
-        source-guild   => %args<source_guild> // {},
-        source-channel => %args<source_channel> // {},
-        url            => %args<url> // '',
-    )
+method from-json($data) { self.new(|jmap($data)) }
+
+submethod TWEAK(:$user) {
+    if $user && $user ~~ Hash {
+        require Dusk::Model::User;
+        $!user = ::('Dusk::Model::User').from-json($user);
+    }
 }

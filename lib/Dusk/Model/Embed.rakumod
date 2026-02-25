@@ -1,13 +1,14 @@
 use v6.d;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Embed;
 
-has Str $.title;
-has Str $.type;
-has Str $.description;
-has Str $.url;
-has Str $.timestamp;
-has Int $.color;
+has $.title;
+has $.type;
+has $.description;
+has $.url;
+has $.timestamp;
+has $.color;
 has %.footer;
 has %.image;
 has %.thumbnail;

@@ -1,20 +1,21 @@
 use v6.d;
+use Dusk::Util::JSONTraits;
 use Dusk::Model::User;
 
 unit class Dusk::Model::Member;
 
 has Dusk::Model::User $.user;
-has Str $.nick;
-has Str $.avatar;
+has $.nick;
+has $.avatar;
 has Str @.roles;
-has Str $.joined-at;
-has Str $.premium-since;
-has Bool $.deaf;
-has Bool $.mute;
-has Int $.flags;
-has Bool $.pending;
-has Str $.permissions;
-has Str $.communication-disabled-until;
+has $.joined-at;
+has $.premium-since;
+has $.deaf;
+has $.mute;
+has $.flags;
+has $.pending;
+has $.permissions;
+has $.communication-disabled-until;
 
 method new(*%args) {
     my $user = %args<user> ?? Dusk::Model::User.new(|%args<user>) !! Dusk::Model::User;

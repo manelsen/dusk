@@ -1,31 +1,19 @@
-use v6.d;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::AutoModRule;
 
-has Str $.id           is required;
-has Str $.guild-id     is required;
-has Str $.name         is required;
-has Str $.creator-id   is required;
-has Int $.event-type   is required;
-has Int $.trigger-type is required;
-has %.trigger-metadata;
-has @.actions;
-has Bool $.enabled;
-has @.exempt-roles;
-has @.exempt-channels;
+has Str  $.id           = '';
+has Str  $.guild-id     = '';
+has Str  $.name         = '';
+has Str  $.creator-id   = '';
+has Int  $.event-type   = 0;
+has Int  $.trigger-type = 0;
+has      %.trigger-metadata;
+has      @.actions;
+has Bool $.enabled     = False;
+has      @.exempt-roles;
+has      @.exempt-channels;
 
-method new(*%args) {
-    self.bless(
-        id               => ~(%args<id> // ''),
-        guild-id         => ~(%args<guild_id> // ''),
-        name             => ~(%args<name> // ''),
-        creator-id       => ~(%args<creator_id> // ''),
-        event-type       => (%args<event_type> // 1).Int,
-        trigger-type     => (%args<trigger_type> // 1).Int,
-        trigger-metadata => %args<trigger_metadata> // {},
-        actions          => @(%args<actions> // []),
-        enabled          => ?%args<enabled>,
-        exempt-roles     => @(%args<exempt_roles> // []),
-        exempt-channels  => @(%args<exempt_channels> // []),
-    )
-}
+method new(*%args) { self.bless(|%args) }
+
+method from-json($data) { self.new(|jmap($data)) }

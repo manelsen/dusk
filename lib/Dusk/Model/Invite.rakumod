@@ -1,47 +1,42 @@
-use v6.d;
-use Dusk::Model::User;
-use Dusk::Model::Guild;
-use Dusk::Model::Channel;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Invite;
 
-has Str $.code         is required;
-has Dusk::Model::Guild $.guild;
-has Dusk::Model::Channel $.channel;
-has Dusk::Model::User $.inviter;
-has Int $.target-type;
-has Dusk::Model::User $.target-user;
-has %.target-application;
-has Int $.approximate-presence-count;
-has Int $.approximate-member-count;
-has Str $.expires-at;
-has Int $.uses;
-has Int $.max-uses;
-has Int $.max-age;
-has Bool $.temporary;
-has Str $.created-at;
+has Str $.code                       = '';
+has     $.guild;   # Dusk::Model::Guild
+has     $.channel; # Dusk::Model::Channel
+has     $.inviter; # Dusk::Model::User
+has Int $.target-type                = 0;
+has     $.target-user; # Dusk::Model::User
+has     %.target-application;
+has Int $.approximate-presence-count = 0;
+has Int $.approximate-member-count   = 0;
+has Str $.expires-at                 = '';
+has Int $.uses                       = 0;
+has Int $.max-uses                   = 0;
+has Int $.max-age                    = 0;
+has Bool $.temporary                 = False;
+has Str $.created-at                 = '';
 
-method new(*%args) {
-    my $guild   = %args<guild> ?? Dusk::Model::Guild.new(|%args<guild>) !! Dusk::Model::Guild;
-    my $channel = %args<channel> ?? Dusk::Model::Channel.new(|%args<channel>) !! Dusk::Model::Channel;
-    my $inviter = %args<inviter> ?? Dusk::Model::User.new(|%args<inviter>) !! Dusk::Model::User;
-    my $t-user  = %args<target_user> ?? Dusk::Model::User.new(|%args<target_user>) !! Dusk::Model::User;
+method new(*%args) { self.bless(|%args) }
 
-    self.bless(
-        code                       => ~(%args<code> // ''),
-        guild                      => $guild,
-        channel                    => $channel,
-        inviter                    => $inviter,
-        target-type                => (%args<target_type> // 0).Int,
-        target-user                => $t-user,
-        target-application         => %args<target_application> // {},
-        approximate-presence-count => (%args<approximate_presence_count> // 0).Int,
-        approximate-member-count   => (%args<approximate_member_count> // 0).Int,
-        expires-at                 => %args<expires_at> // '',
-        uses                       => (%args<uses> // 0).Int,
-        max-uses                   => (%args<max_uses> // 0).Int,
-        max-age                    => (%args<max_age> // 0).Int,
-        temporary                  => ?%args<temporary>,
-        created-at                 => %args<created_at> // '',
-    )
+method from-json($data) { self.new(|jmap($data)) }
+
+submethod TWEAK(:$guild, :$channel, :$inviter, :$target-user) {
+    if $guild && $guild ~~ Hash {
+        require Dusk::Model::Guild;
+        $!guild = ::('Dusk::Model::Guild').from-json($guild);
+    }
+    if $channel && $channel ~~ Hash {
+        require Dusk::Model::Channel;
+        $!channel = ::('Dusk::Model::Channel').from-json($channel);
+    }
+    if $inviter && $inviter ~~ Hash {
+        require Dusk::Model::User;
+        $!inviter = ::('Dusk::Model::User').from-json($inviter);
+    }
+    if $target-user && $target-user ~~ Hash {
+        require Dusk::Model::User;
+        $!target-user = ::('Dusk::Model::User').from-json($target-user);
+    }
 }

@@ -1,20 +1,13 @@
-use v6.d;
-use Dusk::Model::User;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Team;
 
-has Str $.id   is required;
-has Str $.icon;
-has Str $.name is required;
-has Str $.owner-user-id is required;
-has @.members;
+has Str  $.id            = '';
+has Str  $.icon          = '';
+has Str  $.name          = '';
+has Str  $.owner-user-id = '';
+has      @.members;
 
-method new(*%args) {
-    self.bless(
-        id            => ~(%args<id> // ''),
-        icon          => %args<icon> // '',
-        name          => ~(%args<name> // ''),
-        owner-user-id => ~(%args<owner_user_id> // ''),
-        members       => @(%args<members> // []),
-    )
-}
+method new(*%args) { self.bless(|%args) }
+
+method from-json($data) { self.new(|jmap($data)) }

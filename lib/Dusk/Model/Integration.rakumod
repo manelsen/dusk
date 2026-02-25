@@ -1,44 +1,31 @@
-use v6.d;
-use Dusk::Model::User;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Integration;
 
-has Str $.id   is required;
-has Str $.name is required;
-has Str $.type is required;
-has Bool $.enabled;
-has Bool $.syncing;
-has Str $.role-id;
-has Bool $.enable-emoticons;
-has Int $.expire-behavior;
-has Int $.expire-grace-period;
-has Dusk::Model::User $.user;
+has Str $.id                = '';
+has Str $.name              = '';
+has Str $.type              = '';
+has Bool $.enabled          = False;
+has Bool $.syncing          = False;
+has Str $.role-id           = '';
+has Bool $.enable-emoticons = False;
+has Int $.expire-behavior   = 0;
+has Int $.expire-grace-period = 0;
+has $.user; # Dusk::Model::User
 has %.account;
-has Str $.synced-at;
-has Int $.subscriber-count;
-has Bool $.revoked;
+has Str $.synced-at         = '';
+has Int $.subscriber-count  = 0;
+has Bool $.revoked          = False;
 has %.application;
 has @.scopes;
 
-method new(*%args) {
-    my $user = %args<user> ?? Dusk::Model::User.new(|%args<user>) !! Dusk::Model::User;
+method new(*%args) { self.bless(|%args) }
 
-    self.bless(
-        id                  => ~(%args<id> // ''),
-        name                => ~(%args<name> // ''),
-        type                => ~(%args<type> // ''),
-        enabled             => ?%args<enabled>,
-        syncing             => ?%args<syncing>,
-        role-id             => %args<role_id> // '',
-        enable-emoticons    => ?%args<enable_emoticons>,
-        expire-behavior     => (%args<expire_behavior> // 0).Int,
-        expire-grace-period => (%args<expire_grace_period> // 0).Int,
-        user                => $user,
-        account             => %args<account> // {},
-        synced-at           => %args<synced_at> // '',
-        subscriber-count    => (%args<subscriber_count> // 0).Int,
-        revoked             => ?%args<revoked>,
-        application         => %args<application> // {},
-        scopes              => @(%args<scopes> // []),
-    )
+method from-json($data) { self.new(|jmap($data)) }
+
+submethod TWEAK(:$user) {
+    if $user && $user ~~ Hash {
+        require Dusk::Model::User;
+        $!user = ::('Dusk::Model::User').from-json($user);
+    }
 }

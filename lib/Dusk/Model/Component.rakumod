@@ -1,14 +1,15 @@
 use v6.d;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Component;
 
-has Int $.type is required;
-has Int $.style;
-has Str $.label;
+has $.type is required;
+has $.style;
+has $.label;
 has %.emoji;
-has Str $.custom-id;
-has Str $.url;
-has Bool $.disabled;
+has $.custom-id;
+has $.url;
+has $.disabled;
 has Dusk::Model::Component @.components;
 
 method new(*%args) {

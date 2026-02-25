@@ -1,24 +1,27 @@
-use v6.d;
-use Dusk::Model::User;
-use Dusk::Model::Activity;
+use Dusk::Util::JSONTraits;
 
 unit class Dusk::Model::Presence;
 
-has Dusk::Model::User $.user;
-has Str $.guild-id;
-has Str $.status;
-has Dusk::Model::Activity @.activities;
-has %.client-status;
+has      $.user; # Dusk::Model::User
+has Str  $.guild-id = '';
+has Str  $.status   = 'offline';
+has      @.activities; # Dusk::Model::Activity
+has      %.client-status;
 
-method new(*%args) {
-    my $user = %args<user> ?? Dusk::Model::User.new(|%args<user>) !! Dusk::Model::User;
-    my Dusk::Model::Activity @activities = (%args<activities> // []).map({ Dusk::Model::Activity.new(|$_) });
+method new(*%args) { self.bless(|%args) }
 
-    self.bless(
-        user          => $user,
-        guild-id      => %args<guild_id> // '',
-        status        => %args<status> // 'offline',
-        activities    => @activities,
-        client-status => %args<client_status> // {},
-    )
+method from-json($data) { self.new(|jmap($data)) }
+
+submethod TWEAK(:$user, :$activities) {
+    if $user && $user ~~ Hash {
+        require Dusk::Model::User;
+        $!user = ::('Dusk::Model::User').from-json($user);
+    }
+    
+    if $activities && $activities ~~ Positional {
+        require Dusk::Model::Activity;
+        @!activities = $activities.map({ 
+            $_ ~~ Dusk::Model::Activity ?? $_ !! ::('Dusk::Model::Activity').from-json($_) 
+        });
+    }
 }
