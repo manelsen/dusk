@@ -1,38 +1,16 @@
+use v6.d;
 use Dusk::Rest::Route;
-use Dusk::Model::Channel;
 use Dusk::Error;
 use JSON::Fast;
 use Cro::HTTP::Client;
 
-=begin pod
-=head1 Dusk::Rest::Client
-
-Optimized HTTP Client for the Discord REST API (v10).
-Encapsulates route assembly, Header injection, and automatic handling
-of global Rate Limits (429 Too Many Requests).
-
-=head2 Usage
-
-use Dusk::Rest::Client;
-use Dusk::Rest::Route;
-
-my $client = Dusk::Rest::Client.new(token => 'YOUR_TOKEN_HERE');
-my $route = Dusk::Rest::Route.new(method => 'GET', path => '/users/@me');
-    
-my $user = await $client.request($route);
-=end pod
-
 unit class Dusk::Rest::Client;
 
-#| The bot token used in Authorization.
 has Str $!token;
-#| The targeted API version (Default: 10).
 has Int $.api-version;
-#| The auto-computed base URL for API routes.
 has Str $.base-url;
 has &!mock-dispatcher;
 
-#| Instantiates a client requiring a valid Discord Token.
 method new(:$token!, :$api-version = 10) {
     self.bless(
         token       => $token,
@@ -45,7 +23,6 @@ submethod TWEAK(:$token!) {
     $!token = $token;
 }
 
-# RNF-02: Security against Token leak
 method gist() { "Dusk::Rest::Client<api-v$.api-version>" }
 method Str()  { "Dusk::Rest::Client<api-v$.api-version>" }
 
@@ -53,20 +30,13 @@ method set-mock-dispatcher(&dispatcher) {
     &!mock-dispatcher = &dispatcher;
 }
 
-#| Sends an asynchronous request to the API based on a L<Dusk::Rest::Route>.
-#| Internally pauses the thread (await) if an HTTP 429 (Rate Limit) is received.
-#|
-#| =head3 Exceptions
-#| Throws L<Dusk::Error::Unauthorized> (401)
-#| Throws L<Dusk::Error::Forbidden> (403)
-#| Throws L<Dusk::Error::NotFound> (404)
 method request(Dusk::Rest::Route $route) {
     start {
         my $url = $.base-url ~ $route.path;
         my %headers = (
             'Authorization' => "Bot " ~ $!token,
             'Content-Type'  => 'application/json',
-            'User-Agent'    => 'DiscordBot (https://github.com/micelio/Dusk, 0.1.0)'
+            'User-Agent'    => 'DiscordBot (https://github.com/micelio/Dusk, 0.3.1)'
         );
 
         my $res;
@@ -110,12 +80,10 @@ method request(Dusk::Rest::Route $route) {
                             $response = .response;
                             if $response.status == 429 {
                                 my $retry-after = $response.header('retry-after') // 1;
-                                # Discord returns retry-after in seconds usually. 
-                                # Fallback to 1 second if missing.
                                 await Promise.in($retry-after.Numeric);
                                 $retries_left--;
                             } else {
-                                $success = True; # Not a retryable error, break loop
+                                $success = True;
                             }
                         }
                     }
@@ -131,16 +99,14 @@ method request(Dusk::Rest::Route $route) {
             };
         }
 
-        if $res<status> == 200 {
-            if $route.path ~~ / ^ \/channels\/ \d+ $ / {
-                my $content = $res<body> ~~ Positional ?? $res<body>[0] !! $res<body>;
-                my $channel = Dusk::Model::Channel.new(
-                    id       => $content<id>,
-                    name     => $content<name>,
-                    type     => $content<type> // 0,
-                    guild_id => $content<guild_id> // ''
-                );
-                $channel;
+        if $res<status> ~~ 200..299 {
+            if $route.target-model.^name ne 'Mu' && $res<body> {
+                my $model = $route.target-model;
+                if $res<body> ~~ Positional {
+                    $res<body>.map({ $model.new(|$_) }).List;
+                } else {
+                    $model.new(|$res<body>);
+                }
             } else {
                 $res<body>;
             }
@@ -154,4 +120,15 @@ method request(Dusk::Rest::Route $route) {
             die Dusk::Error::APIError.new(status => $res<status>, body => $res<body>);
         }
     }
+}
+
+#| High-level helper to get the bot's user object.
+method bot-user() {
+    use Dusk::Model::User;
+    my $route = Dusk::Rest::Route.new(
+        method       => 'GET',
+        path         => '/users/@me',
+        target-model => Dusk::Model::User
+    );
+    return self.request($route);
 }

@@ -8,17 +8,15 @@ use Dusk::Model::Message;
 use Dusk::Model::Channel;
 use Dusk::Model::User;
 use Dusk::Model::Guild;
+use Dusk::Model::Embed;
+use Dusk::Model::Component;
+use Dusk::Model::Overwrite;
 
 subtest 'Message Parsing (rest_create_message.json)' => {
     my $msg-json = "t/fixtures/rest_create_message.json".IO.slurp;
     my $msg-data = from-json($msg-json);
     
-    my $msg = Dusk::Model::Message.new(
-        id           => $msg-data[0]<id>,
-        channel_id   => $msg-data[0]<channel_id>,
-        content      => $msg-data[0]<content>,
-        author       => $msg-data[0]<author>
-    );
+    my $msg = Dusk::Model::Message.new(|$msg-data);
     
     isa-ok $msg, Dusk::Model::Message, 'Can instantiate a Message';
     is $msg.id, "1472053869558239494", 'Message ID parsed correctly';
@@ -29,40 +27,43 @@ subtest 'Message Parsing (rest_create_message.json)' => {
     is $msg.author.id, "1470119116374282333", 'Author ID correct';
     is $msg.author.username, "Bellegendas Premium", 'Author username correct';
     is $msg.author.discriminator, "7281", 'Author discriminator correct';
+
+    is $msg.embeds.elems, 1, 'Embeds list size correct';
+    isa-ok $msg.embeds[0], Dusk::Model::Embed, 'First embed is correct type';
+    is $msg.embeds[0].title, "Test Embed", 'Embed title parsed';
+
+    is $msg.components.elems, 1, 'Components list size correct';
+    isa-ok $msg.components[0], Dusk::Model::Component, 'First component is correct type (ActionRow)';
+    is $msg.components[0].components.elems, 1, 'ActionRow nested components size correct';
+    is $msg.components[0].components[0].label, 'Click Me', 'Button label parsed';
 };
 
 subtest 'Channel Parsing (rest_get_channel.json)' => {
     my $channel-json = "t/fixtures/rest_get_channel.json".IO.slurp;
     my $channel-data = from-json($channel-json);
     
-    my $channel = Dusk::Model::Channel.new(
-        id        => $channel-data[0]<id>,
-        name      => $channel-data[0]<name>,
-        type      => $channel-data[0]<type> // 0,
-        guild_id  => $channel-data[0]<guild_id> // ''
-    );
+    my $channel = Dusk::Model::Channel.new(|$channel-data);
     
     isa-ok $channel, Dusk::Model::Channel, 'Can instantiate a Channel';
     is $channel.id, "1212124713271304246", 'Channel ID parsed correctly';
-    is $channel.name, "geral", 'Channel name parsed correctly';
+    is $channel.name, "general", 'Channel name parsed correctly';
     is $channel.type, 0, 'Channel type parsed correctly (GUILD_TEXT)';
     is $channel.guild-id, "1212124712629440612", 'Guild ID parsed correctly';
+    
+    is $channel.permission-overwrites.elems, 1, 'Overwrites list size correct';
+    isa-ok $channel.permission-overwrites[0], Dusk::Model::Overwrite, 'Overwrite is correct type';
+    is $channel.permission-overwrites[0].id, "1212124712629440612", 'Overwrite ID parsed';
 };
 
 subtest 'Guild Parsing (rest_get_guild.json)' => {
     my $guild-json = "t/fixtures/rest_get_guild.json".IO.slurp;
     my $guild-data = from-json($guild-json);
     
-    my $guild = Dusk::Model::Guild.new(
-        id                 => $guild-data[0]<id>,
-        name               => $guild-data[0]<name>,
-        owner_id           => $guild-data[0]<owner_id> // '',
-        verification_level => $guild-data[0]<verification_level> // 0
-    );
+    my $guild = Dusk::Model::Guild.new(|$guild-data);
     
     isa-ok $guild, Dusk::Model::Guild, 'Can instantiate a Guild';
     is $guild.id, "1212124712629440612", 'Guild ID parsed correctly';
-    is $guild.name, "Server Teste", 'Guild name parsed correctly';
+    is $guild.name, "Test Server", 'Guild name parsed correctly';
     is $guild.owner-id, "383221796700291082", 'Guild owner ID parsed correctly';
     is $guild.verification-level, 0, 'Verification level parsed correctly';
 };

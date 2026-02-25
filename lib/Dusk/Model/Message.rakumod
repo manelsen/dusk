@@ -1,44 +1,44 @@
-=begin pod
-=head1 Dusk::Model::Message
-
-Represents a Discord message with nested author.
-
-=head2 Attributes
-
-=item C<Str $.id> — Snowflake ID (required)
-=item C<Str $.channel-id> — Channel where message was sent (required)
-=item C<Str $.content> — Text content (required)
-=item C<Dusk::Model::User $.author> — Message author
-
-=end pod
-
+use v6.d;
 use Dusk::Model::User;
+use Dusk::Model::Embed;
+use Dusk::Model::Component;
+use Dusk::Model::Attachment;
 
 unit class Dusk::Model::Message;
 
-#| The unique ID (Snowflake) of the message.
-has Str $.id         is required;
-#| The ID of the channel where the message was sent.
-has Str $.channel-id is required;
-#| The main text content of the message.
-has Str $.content    is required;
-#| The object representing the message author.
+has Str $.id           is required;
+has Str $.channel-id   is required;
+has Str $.content      is required;
 has Dusk::Model::User $.author;
+has Dusk::Model::Embed @.embeds;
+has Dusk::Model::Component @.components;
+has Dusk::Model::Attachment @.attachments;
+has Bool $.tts;
+has Bool $.mention-everyone;
+has Str $.timestamp;
+has Str $.edited-timestamp;
+has Int $.type;
+has Int $.flags;
 
 method new(*%args) {
-    my $author = Dusk::Model::User;
-    if %args<author> {
-        $author = Dusk::Model::User.new(
-            id            => %args<author><id>,
-            username      => %args<author><username>,
-            discriminator => %args<author><discriminator>
-        );
-    }
+    my $author = %args<author> ?? Dusk::Model::User.new(|%args<author>) !! Dusk::Model::User;
+    my Dusk::Model::Embed @embeds = (%args<embeds> // []).map({ Dusk::Model::Embed.new(|$_) });
+    my Dusk::Model::Component @components = (%args<components> // []).map({ Dusk::Model::Component.new(|$_) });
+    my Dusk::Model::Attachment @attachments = (%args<attachments> // []).map({ Dusk::Model::Attachment.new(|$_) });
 
     self.bless(
-        id         => ~(%args<id> // ''),
-        channel-id => ~(%args<channel_id> // ''),
-        content    => ~(%args<content> // ''),
-        author     => $author,
+        id               => ~(%args<id> // ''),
+        channel-id       => ~(%args<channel_id> // ''),
+        content          => ~(%args<content> // ''),
+        author           => $author,
+        embeds           => @embeds,
+        components       => @components,
+        attachments      => @attachments,
+        tts              => ?%args<tts>,
+        mention-everyone => ?%args<mention_everyone>,
+        timestamp        => ~(%args<timestamp> // ''),
+        edited-timestamp => ~(%args<edited_timestamp> // ''),
+        type             => (%args<type> // 0).Int,
+        flags            => (%args<flags> // 0).Int,
     )
 }

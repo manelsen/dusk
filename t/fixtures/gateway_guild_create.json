@@ -7,7 +7,7 @@
             "mfa_level": 0,
             "channels": [
                 {
-                    "name": "Canais de Texto",
+                    "name": "Text Channels",
                     "flags": 0,
                     "id": "1212124713271304243",
                     "position": 0,
@@ -17,7 +17,7 @@
                     "type": 4
                 },
                 {
-                    "name": "Canais de Voz",
+                    "name": "Voice Channels",
                     "flags": 0,
                     "id": "1212124713271304245",
                     "position": 0,
@@ -29,7 +29,7 @@
                 {
                     "topic": null,
                     "parent_id": "1212124713271304243",
-                    "name": "geral",
+                    "name": "general",
                     "last_pin_timestamp": "2025-12-30T21:05:57.113000+00:00",
                     "last_message_id": "1472053869558239494",
                     "id": "1212124713271304246",
@@ -48,7 +48,7 @@
                 {
                     "parent_id": "1212124713271304245",
                     "bitrate": 64000,
-                    "name": "Geral",
+                    "name": "General",
                     "user_limit": 0,
                     "status": null,
                     "last_message_id": "1470151424087298171",
@@ -69,7 +69,7 @@
                 {
                     "topic": null,
                     "parent_id": "1212124713271304243",
-                    "name": "mapas",
+                    "name": "maps",
                     "last_message_id": "1235550799803977768",
                     "id": "1213870040336568360",
                     "position": 1,
@@ -101,9 +101,9 @@
                     "type": 0
                 },
                 {
-                    "topic": "Um teste em cada linha",
+                    "topic": "One test per line",
                     "parent_id": "1212124713271304243",
-                    "name": "testes",
+                    "name": "tests",
                     "default_tag_setting": "match_some",
                     "last_message_id": "1465112677381574716",
                     "id": "1459206718516101298",
@@ -159,7 +159,6 @@
                         "1470125745056518333"
                     ],
                     "premium_since": null,
-                    "nick": null,
                     "joined_at": "2026-02-08T18:34:51.331000+00:00",
                     "deaf": false,
                     "avatar": null
@@ -330,7 +329,7 @@
                     "require_colons": true
                 }
             ],
-            "name": "Server Teste",
+            "name": "Test Server",
             "nsfw": false,
             "moderator_reporting": null,
             "guild_scheduled_events": [
@@ -420,7 +419,7 @@
             "mfa_level": 0,
             "channels": [
                 {
-                    "name": "Canais de texto",
+                    "name": "Text Channels",
                     "flags": 0,
                     "id": "969760589838712874",
                     "position": 0,
@@ -430,9 +429,9 @@
                     "type": 4
                 },
                 {
-                    "topic": "Bem-vindos e bem-vindas a Nave Belle.\n\nComunidade que se interessa pelo conteúdo  que a Belle traz em seus canais.\n\nAqui é um espaço  de nerdices.\n\nNÃO  PODE :\n\nFalar de política \nReligião \nSer capacitistas \nSer racista \nSer homofóbico \n\nDesrespeito  no geral vai ser jogado para fora da nave.\n\nPODE:\n\n■ Falar de qualquer assunto que não  quebre as regras acima.\n\n■ Pode divulgar sua marca seu canal.\n\n■ Temos navegantes  com deficiência  visual, pode mandar meme e figurinhas, mas se puder descrever vai ser bem legal.",
+                    "topic": "Welcome to Belle's Ship.\n\nCommunity interested in the content Belle brings to her channels.\n\nThis is a space for geeky things.\n\nNOT ALLOWED:\n\nTalking about politics\nReligion\nBeing ableist\nBeing racist\nBeing homophobic\n\nGeneral disrespect will be thrown out of the ship.\n\nALLOWED:\n\n■ Talk about any subject that doesn't break the rules above.\n\n■ You can promote your brand or channel.\n\n■ We have visually impaired sailors, you can send memes and stickers, but if you can describe them it would be cool.",
                     "parent_id": "969760589838712874",
-                    "name": "hall-da-nave",
+                    "name": "ship-hall",
                     "last_pin_timestamp": "2022-09-04T23:52:14+00:00",
                     "last_message_id": "1472017781586133158",
                     "id": "969760589838712875",
@@ -451,9 +450,9 @@
                     "type": 0
                 },
                 {
-                    "topic": "Juntar grupos para jogar juntos.",
+                    "topic": "Gather groups to play together.",
                     "parent_id": "969760589838712874",
-                    "name": "chamada-das-forças",
+                    "name": "call-to-arms",
                     "last_message_id": "1214290110137241722",
                     "id": "969760589838712876",
                     "position": 2,
@@ -471,7 +470,7 @@
                     "type": 0
                 },
                 {
-                    "name": "Canais de voz",
+                    "name": "Voice Channels",
                     "flags": 0,
                     "id": "969760589838712877",
                     "position": 3,
@@ -518,7 +517,7 @@
                 {
                     "parent_id": "969760589838712877",
                     "bitrate": 64000,
-                    "name": "Cozinha da nave",
+                    "name": "Ship kitchen",
                     "user_limit": 0,
                     "status": null,
                     "last_message_id": "1441590073920589834",
@@ -553,7 +552,7 @@
                 {
                     "topic": null,
                     "parent_id": "969760589838712874",
-                    "name": "dicas",
+                    "name": "tips",
                     "last_message_id": "1214290130592862378",
                     "id": "973665009743822958",
                     "position": 3,
@@ -565,9 +564,9 @@
                     "type": 0
                 },
                 {
-                    "topic": "Aqui você pode anunciar  seu projeto.",
+                    "topic": "Here you can announce your project.",
                     "parent_id": "969760589838712874",
-                    "name": "anúncios-tudo-aqui",
+                    "name": "announcements",
                     "last_message_id": "1214290140890013726",
                     "id": "973675852799836182",
                     "position": 4,
@@ -625,7 +624,7 @@
                 {
                     "topic": null,
                     "parent_id": "969760589838712874",
-                    "name": "imagens-da-ia",
+                    "name": "ai-images",
                     "last_message_id": "1216169848170610862",
                     "id": "1016140813484425237",
                     "position": 6,
@@ -639,7 +638,7 @@
                 {
                     "topic": null,
                     "parent_id": "969760589838712874",
-                    "name": "jogos-acessíveis",
+                    "name": "accessible-games",
                     "last_message_id": "1269345022143238256",
                     "id": "1037748644524331110",
                     "position": 7,
@@ -652,7 +651,7 @@
                 },
                 {
                     "bitrate": 64000,
-                    "name": "reuniao",
+                    "name": "meeting",
                     "user_limit": 0,
                     "status": null,
                     "last_message_id": null,
@@ -681,7 +680,7 @@
                 {
                     "parent_id": "969760589838712877",
                     "bitrate": 64000,
-                    "name": "jogar juntos",
+                    "name": "play together",
                     "user_limit": 0,
                     "status": null,
                     "last_message_id": "1472027806434197646",
@@ -704,7 +703,7 @@
                 {
                     "parent_id": "969760589838712877",
                     "bitrate": 64000,
-                    "name": "Canal dos mais chegados",
+                    "name": "Inner circle channel",
                     "user_limit": 0,
                     "status": null,
                     "last_message_id": null,
@@ -770,186 +769,6 @@
                     "roles": [
                     ],
                     "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2022-05-10T20:40:00.818000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": "belleutsch",
-                        "bot": false,
-                        "display_name_styles": null,
-                        "global_name": "belleutsch",
-                        "primary_guild": {
-                            "identity_guild_id": "1371674116054192260",
-                            "tag": "MMS",
-                            "badge": "60822eb8c504c45cee27680dbccf599b",
-                            "identity_enabled": true
-                        },
-                        "id": "553739122490212382",
-                        "public_flags": 0,
-                        "discriminator": "0",
-                        "avatar_decoration_data": null,
-                        "display_name": "belleutsch",
-                        "avatar": "7d6139bb35bd21020458ccb78f198e97"
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                    ],
-                    "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2022-04-30T00:42:21.909000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": "jopa5240",
-                        "bot": false,
-                        "display_name_styles": null,
-                        "global_name": "Jopa",
-                        "primary_guild": null,
-                        "id": "247119098289455121",
-                        "public_flags": 0,
-                        "discriminator": "0",
-                        "avatar_decoration_data": null,
-                        "display_name": "Jopa",
-                        "avatar": "a402658ad4c6eaba6a76fe8c70dc1721"
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                    ],
-                    "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2022-09-04T23:15:56.627000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": "Bellegendas Premium",
-                        "bot": true,
-                        "display_name_styles": null,
-                        "global_name": null,
-                        "primary_guild": null,
-                        "id": "1470119116374282333",
-                        "public_flags": 0,
-                        "discriminator": "7281",
-                        "avatar_decoration_data": null,
-                        "display_name": null,
-                        "avatar": null
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                        "1470151538990383288"
-                    ],
-                    "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2026-02-08T20:17:21.018000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": "jopa5240",
-                        "bot": false,
-                        "display_name_styles": null,
-                        "global_name": "Jopa",
-                        "primary_guild": null,
-                        "id": "247119098289455121",
-                        "public_flags": 0,
-                        "discriminator": "0",
-                        "avatar_decoration_data": null,
-                        "display_name": "Jopa",
-                        "avatar": "a402658ad4c6eaba6a76fe8c70dc1721"
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                    ],
-                    "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2022-09-04T23:15:56.627000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": "belleutsch",
-                        "bot": false,
-                        "display_name_styles": null,
-                        "global_name": "belleutsch",
-                        "primary_guild": {
-                            "identity_guild_id": "1371674116054192260",
-                            "tag": "MMS",
-                            "badge": "60822eb8c504c45cee27680dbccf599b",
-                            "identity_enabled": true
-                        },
-                        "id": "553739122490212382",
-                        "public_flags": 0,
-                        "discriminator": "0",
-                        "avatar_decoration_data": null,
-                        "display_name": "belleutsch",
-                        "avatar": "7d6139bb35bd21020458ccb78f198e97"
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                    ],
-                    "premium_since": null,
-                    "nick": null,
-                    "joined_at": "2022-04-30T00:42:21.909000+00:00",
-                    "deaf": false,
-                    "avatar": null
-                },
-                {
-                    "user": {
-                        "collectibles": null,
-                        "username": ".ogaih",
-                        "bot": false,
-                        "display_name_styles": null,
-                        "global_name": "Hiago",
-                        "primary_guild": null,
-                        "id": "701216011835408485",
-                        "public_flags": 0,
-                        "discriminator": "0",
-                        "avatar_decoration_data": null,
-                        "display_name": "Hiago",
-                        "avatar": "145816e7ffa1e28f70a454a5f82921d5"
-                    },
-                    "pending": false,
-                    "banner": null,
-                    "mute": false,
-                    "flags": 0,
-                    "communication_disabled_until": null,
-                    "roles": [
-                    ],
-                    "premium_since": null,
-                    "nick": null,
                     "joined_at": "2022-05-10T20:40:00.818000+00:00",
                     "deaf": false,
                     "avatar": null
@@ -989,7 +808,7 @@
                         "tertiary_color": null,
                         "primary_color": 14988288
                     },
-                    "name": "moderador desse trem",
+                    "name": "moderator",
                     "icon": null,
                     "id": "973655806014791700",
                     "position": 1,
@@ -1010,7 +829,7 @@
                         "tertiary_color": null,
                         "primary_color": 11429888
                     },
-                    "name": "fiscal desse trem",
+                    "name": "inspector",
                     "icon": null,
                     "id": "973659997584105573",
                     "position": 1,
@@ -1075,7 +894,7 @@
                         "tertiary_color": null,
                         "primary_color": 0
                     },
-                    "name": "novo cargo",
+                    "name": "new role",
                     "icon": null,
                     "id": "1030546011233452154",
                     "position": 1,
@@ -1279,7 +1098,7 @@
             },
             "emojis": [
             ],
-            "name": "Nave da Belle",
+            "name": "Belle's Ship",
             "nsfw": false,
             "moderator_reporting": null,
             "guild_scheduled_events": [
@@ -1288,46 +1107,6 @@
             "afk_timeout": 300,
             "preferred_locale": "en-US",
             "voice_states": [
-                {
-                    "suppress": false,
-                    "self_video": false,
-                    "user_id": "247119098289455121",
-                    "self_deaf": false,
-                    "self_mute": false,
-                    "session_id": "<redacted>",
-                    "channel_id": "1294404110761725952",
-                    "mute": false,
-                    "discoverable": true,
-                    "deaf": false,
-                    "request_to_speak_timestamp": null
-                },
-                {
-                    "suppress": false,
-                    "self_video": false,
-                    "user_id": "553739122490212382",
-                    "self_deaf": false,
-                    "self_mute": false,
-                    "session_id": "<redacted>",
-                    "channel_id": "1294404110761725952",
-                    "mute": false,
-                    "discoverable": true,
-                    "deaf": false,
-                    "request_to_speak_timestamp": null,
-                    "self_stream": true
-                },
-                {
-                    "suppress": false,
-                    "self_video": false,
-                    "user_id": "701216011835408485",
-                    "self_deaf": false,
-                    "self_mute": false,
-                    "session_id": "<redacted>",
-                    "channel_id": "1294404110761725952",
-                    "mute": false,
-                    "discoverable": true,
-                    "deaf": false,
-                    "request_to_speak_timestamp": null
-                }
             ],
             "afk_channel_id": null,
             "hub_type": null,
@@ -1363,7 +1142,7 @@
                     "total_message_sent": 3,
                     "message_count": 2,
                     "owner_id": "383221796700291082",
-                    "name": "Transcrições",
+                    "name": "Transcriptions",
                     "id": "1470135325249765589",
                     "last_message_id": "1470135482284380366",
                     "thread_metadata": {
@@ -1396,26 +1175,6 @@
                     "user_id": "701216011835408485",
                     "sound_id": "1229205924456169562",
                     "emoji_name": "🐸",
-                    "available": true
-                },
-                {
-                    "name": "FILHADAPUTA",
-                    "volume": 0.9843569397926331,
-                    "emoji_id": null,
-                    "guild_id": "969760589838712873",
-                    "user_id": "701216011835408485",
-                    "sound_id": "1229207834839879793",
-                    "emoji_name": "👩‍👧",
-                    "available": true
-                },
-                {
-                    "name": "ta bem não",
-                    "volume": 1,
-                    "emoji_id": null,
-                    "guild_id": "969760589838712873",
-                    "user_id": "701216011835408485",
-                    "sound_id": "1231745785918521405",
-                    "emoji_name": "🤕",
                     "available": true
                 }
             ],

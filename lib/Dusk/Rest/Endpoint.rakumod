@@ -1,5 +1,20 @@
 use v6.d;
 use Dusk::Rest::Route;
+use Dusk::Model::Channel;
+use Dusk::Model::Guild;
+use Dusk::Model::Message;
+use Dusk::Model::User;
+use Dusk::Model::Role;
+use Dusk::Model::Member;
+use Dusk::Model::Emoji;
+use Dusk::Model::Sticker;
+use Dusk::Model::Invite;
+use Dusk::Model::Webhook;
+use Dusk::Model::AutoModRule;
+use Dusk::Model::ScheduledEvent;
+use Dusk::Model::StageInstance;
+use Dusk::Model::Integration;
+use Dusk::Model::Application;
 
 unit class Dusk::Rest::Endpoint;
 
@@ -369,8 +384,9 @@ method get-applications-skus(:$application-id!) returns Dusk::Rest::Route {
 
 method get-channel(:$channel-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/channels/$channel-id],
+        method       => 'GET',
+        path         => qq[/channels/$channel-id],
+        target-model => Dusk::Model::Channel,
     );
 }
 
@@ -1241,9 +1257,10 @@ method post-channels-invites(:$channel-id!, *%body) returns Dusk::Rest::Route {
 
 method post-channels-messages(:$channel-id!, *%body) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'POST',
-        path   => qq[/channels/$channel-id/messages],
-        body   => %body,
+        method       => 'POST',
+        path         => qq[/channels/$channel-id/messages],
+        body         => %body,
+        target-model => Dusk::Model::Message,
     );
 }
 

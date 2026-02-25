@@ -34,5 +34,5 @@ subtest 'Client Request Flow with Fixtures (Mocked Network)' => {
     
     isa-ok $channel, Dusk::Model::Channel, 'Request returns parsed Model directly';
     is $channel.id, "1212124713271304246", 'Channel ID matches fixture';
-    is $channel.name, "geral", 'Channel Name matches fixture';
+    is $channel.name, "general", 'Channel Name matches fixture';
 };

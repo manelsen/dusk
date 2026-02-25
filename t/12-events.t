@@ -50,7 +50,8 @@ subtest 'Dispatcher emits strongly typed Events' => {
 
     ok $received.defined, 'Received event';
     is $received.^name, 'Dusk::Event::Events::InteractionCreate', 'Emitted strong type';
-    is $received.data<name>, 'ping', 'Interaction data correct';
-    is $received.user.username, 'voiddragon', 'User model converted';
-    is $received.channel.^name, 'Dusk::Model::Channel', 'Channel model converted';
+    
+    my $interaction = $received.interaction;
+    is $interaction.data.name, 'ping', 'Interaction data name correct';
+    is $interaction.user.username, 'voiddragon', 'User model correct';
 };
