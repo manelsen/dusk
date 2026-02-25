@@ -14,7 +14,6 @@ has Rat $.discovery-timeout = 5.0;
 
 #| Optional mock socket callback: replaces actual UDP dispatch in tests.
 has &!mock-socket;
-
 has IO::Socket::INET $!socket;
 
 #| Set a mock socket callback. Receives a Buf on each send-frame call.
@@ -23,13 +22,8 @@ method set-mock-socket(&cb) { &!mock-socket = &cb }
 #| Build the 74-byte IP Discovery request packet per Discord Voice API spec.
 method build-discovery-packet(--> Buf) {
     my $packet = Buf.new(0 xx 74);
-    # Bytes 0-1: Type = 0x0001 (Request) big-endian
-    $packet[0] = 0x00;
-    $packet[1] = 0x01;
-    # Bytes 2-3: Length = 70 (remaining bytes) big-endian
-    $packet[2] = 0x00;
-    $packet[3] = 70;
-    # Bytes 4-7: SSRC big-endian
+    $packet[0] = 0x00; $packet[1] = 0x01;          # Type: Request
+    $packet[2] = 0x00; $packet[3] = 70;             # Length: 70
     $packet[4] = ($!ssrc +> 24) +& 0xFF;
     $packet[5] = ($!ssrc +> 16) +& 0xFF;
     $packet[6] = ($!ssrc +>  8) +& 0xFF;
@@ -39,8 +33,7 @@ method build-discovery-packet(--> Buf) {
 
 #| Parse the public IP from bytes 8–71 (null-terminated ASCII string).
 method parse-discovery-ip(Blob $response --> Str) {
-    my @ip-bytes = $response[8..71].grep({ $_ != 0 });
-    Buf.new(@ip-bytes).decode('ascii');
+    Buf.new($response[8..71].grep({ $_ != 0 }).list).decode('ascii');
 }
 
 #| Parse the public port from bytes 72–73 (big-endian UInt16).
@@ -55,30 +48,29 @@ method discover(--> Promise) {
         my $reply-channel = Channel.new;
 
         if &!mock-socket {
-            # Mock mode: send via callback; response must be pushed externally.
-            # If no response arrives within timeout, the channel receives nothing.
+            # Mock mode: packet sent via callback; channel never receives — triggers timeout
             my $packet = self.build-discovery-packet();
             &!mock-socket($packet);
         } else {
-            $!socket = IO::Socket::INET.new(
-                host  => $!server-ip,
-                port  => $!server-port,
-                proto => 'udp',
-            );
+            # Real UDP: create unconnected socket, send raw datagram, read response
+            $!socket = IO::Socket::INET.new(:udp);
             my $packet = self.build-discovery-packet();
-            $!socket.send($packet);
 
-            # Read response in background thread
+            # Send manually to target endpoint
+            $!socket.send($packet, :host($!server-ip), :port($!server-port));
+
+            # Read response in background
             start {
-                my $response = $!socket.recv(:bin, :bytes(74));
-                $reply-channel.send($response);
+                try {
+                    my $response = $!socket.recv(:bin, :bytes(74));
+                    $reply-channel.send($response);
+                }
             }
         }
 
-        # Await response or timeout
-        my $timeout  = Promise.in($!discovery-timeout);
+        # Race: wait for response or timeout
+        my $timeout    = Promise.in($!discovery-timeout);
         my $response-p = start { $reply-channel.receive };
-
         await Promise.anyof($response-p, $timeout);
 
         if $timeout.status == Kept {
@@ -98,7 +90,7 @@ method send-frame(Buf $packet) {
     if &!mock-socket {
         &!mock-socket($packet);
     } else {
-        $!socket.send($packet) if $!socket;
+        $!socket.send($packet, :host($!server-ip), :port($!server-port)) if $!socket;
     }
 }
 
