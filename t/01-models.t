@@ -16,7 +16,7 @@ subtest 'Message Parsing (rest_create_message.json)' => {
     my $msg-json = "t/fixtures/rest_create_message.json".IO.slurp;
     my $msg-data = from-json($msg-json);
     
-    my $msg = Dusk::Model::Message.new(|$msg-data);
+    my $msg = Dusk::Model::Message.from-json($msg-data);
     
     isa-ok $msg, Dusk::Model::Message, 'Can instantiate a Message';
     is $msg.id, "1472053869558239494", 'Message ID parsed correctly';
@@ -42,7 +42,7 @@ subtest 'Channel Parsing (rest_get_channel.json)' => {
     my $channel-json = "t/fixtures/rest_get_channel.json".IO.slurp;
     my $channel-data = from-json($channel-json);
     
-    my $channel = Dusk::Model::Channel.new(|$channel-data);
+    my $channel = Dusk::Model::Channel.from-json($channel-data);
     
     isa-ok $channel, Dusk::Model::Channel, 'Can instantiate a Channel';
     is $channel.id, "1212124713271304246", 'Channel ID parsed correctly';
@@ -59,7 +59,7 @@ subtest 'Guild Parsing (rest_get_guild.json)' => {
     my $guild-json = "t/fixtures/rest_get_guild.json".IO.slurp;
     my $guild-data = from-json($guild-json);
     
-    my $guild = Dusk::Model::Guild.new(|$guild-data);
+    my $guild = Dusk::Model::Guild.from-json($guild-data);
     
     isa-ok $guild, Dusk::Model::Guild, 'Can instantiate a Guild';
     is $guild.id, "1212124712629440612", 'Guild ID parsed correctly';
