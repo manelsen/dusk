@@ -90,21 +90,20 @@ subtest 'Discovery timeout raises VoiceUDPDiscoveryFailed', {
     use Dusk::Error;
 
     my $udp = Dusk::Voice::UDP.new(
-        server-ip        => '127.0.0.1',
-        server-port      => 50000,
-        ssrc             => 1234,
+        server-ip         => '127.0.0.1',
+        server-port       => 50000,
+        ssrc              => 1234,
         discovery-timeout => 0.01,
     );
     $udp.set-mock-socket(-> $data { }); # swallow send, never reply
 
+    # Use .result (blocking) instead of await — lets try/CATCH capture the broken Promise
     my $ex;
-    try {
-        await $udp.discover();
-        CATCH { $ex = $_ }
-    }
+    my $p = $udp.discover();
+    try { $p.result; CATCH { default { $ex = $_ } } }
 
-    ok $ex.defined, "An exception was raised";
-    ok $ex ~~ Dusk::Error::VoiceUDPDiscoveryFailed
+    ok $ex.defined, "A exception was raised on timeout";
+    ok ($ex ~~ Dusk::Error::VoiceUDPDiscoveryFailed)
        || ($ex.?exception ~~ Dusk::Error::VoiceUDPDiscoveryFailed),
-       "Exception is VoiceUDPDiscoveryFailed (possibly wrapped)";
+       "Exception is VoiceUDPDiscoveryFailed";
 };
