@@ -30,9 +30,9 @@ await $conn.connect;
 =end pod
 
 use Cro::WebSocket::Client;
-use JSON::Fast;
 use Dusk::Gateway::Payload;
 use Dusk::Gateway::Heartbeat;
+use Dusk::Internal::Parser;
 
 unit class Dusk::Gateway::Connection;
 
@@ -57,6 +57,7 @@ has         $!ws-connection;
 has Dusk::Gateway::Heartbeat $!heartbeat;
 has Supplier $!event-supplier = Supplier::Preserving.new;
 has         &.mock-sender;     # For testing: replaces actual WS send
+has Dusk::Internal::Parser $!parser = Dusk::Internal::Parser.new;
 
 #| Returns the L<Supply> (reactive stream) of decoded L<Dusk::Gateway::Payload> events from the Gateway.
 method events(--> Supply) { $!event-supplier.Supply }
@@ -64,48 +65,61 @@ method events(--> Supply) { $!event-supplier.Supply }
 #| Starts the asynchronous connection to the Gateway, negotiating OP_HELLO and sending IDENTIFY/RESUME.
 #| This method runs in a C<start react> block that perpetuates the lifecycle.
 method connect() {
+    my $p = Promise.new;
     start {
-        my $client = Cro::WebSocket::Client.new;
-        $!ws-connection = await $client.connect($!gateway-url);
+        try {
+            my $client = Cro::WebSocket::Client.new;
+            $!ws-connection = await $client.connect($!gateway-url);
+            $p.keep(True);
 
-        react {
-            whenever $!ws-connection.messages -> $msg {
-                my $text = await $msg.body-text;
-                my $data = from-json($text);
-                my $payload = Dusk::Gateway::Payload.from-json($data);
+            react {
+                whenever $!ws-connection.messages -> $msg {
+                    my $text = await $msg.body-text;
+                    my $data = $!parser.parse($text);
+                    note "DEBUG: Received raw payload: $text" if %*ENV<DUSK_DEBUG>;
+                    my $payload = Dusk::Gateway::Payload.from-json($data);
+                    note "DEBUG: Parsed payload: op={$payload.op} t={$payload.t // 'N/A'}" if %*ENV<DUSK_DEBUG>;
 
-                $!sequence = $payload.s if $payload.s > 0;
+                    $!sequence = $payload.s if $payload.s > 0;
 
-                given $payload.op {
-                    when Dusk::Gateway::Payload::OP_HELLO {
-                        self!start-heartbeat($payload.heartbeat-interval);
-                        self!send-identify();
-                    }
-                    when Dusk::Gateway::Payload::OP_HEARTBEAT_ACK {
-                        $!heartbeat.ack if $!heartbeat;
-                    }
-                    when Dusk::Gateway::Payload::OP_DISPATCH {
-                        if $payload.t eq 'READY' {
-                            $!session-id = $payload.d<session_id> // '';
-                            $!resume-gateway-url = $payload.d<resume_gateway_url> // '';
-                        }
-                        $!event-supplier.emit($payload);
-                    }
-                    when Dusk::Gateway::Payload::OP_RECONNECT {
-                        self!do-resume();
-                    }
-                    when Dusk::Gateway::Payload::OP_INVALID_SESSION {
-                        if $payload.d {
-                            self!do-resume();
-                        } else {
-                            sleep 1 + (3.rand).Int;
+                    given $payload.op {
+                        when Dusk::Gateway::Payload::OP_HELLO {
+                            self!start-heartbeat($payload.heartbeat-interval);
                             self!send-identify();
+                        }
+                        when Dusk::Gateway::Payload::OP_HEARTBEAT_ACK {
+                            $!heartbeat.ack if $!heartbeat;
+                        }
+                        when Dusk::Gateway::Payload::OP_DISPATCH {
+                            if $payload.t eq 'READY' {
+                                $!session-id = $payload.d<session_id> // '';
+                                $!resume-gateway-url = $payload.d<resume_gateway_url> // '';
+                            }
+                            $!event-supplier.emit($payload);
+                        }
+                        when Dusk::Gateway::Payload::OP_RECONNECT {
+                            self!do-resume();
+                        }
+                        when Dusk::Gateway::Payload::OP_INVALID_SESSION {
+                            if $payload.d {
+                                self!do-resume();
+                            } else {
+                                sleep 1 + (3.rand).Int;
+                                self!send-identify();
+                            }
                         }
                     }
                 }
             }
+            CATCH {
+                default {
+                    $p.break($_) unless $p.status ~~ Kept;
+                    $!event-supplier.done;
+                }
+            }
         }
     }
+    return $p;
 }
 
 #| Stops the heartbeat, safely closes the WebSocket connection, and completes the event Supplier.

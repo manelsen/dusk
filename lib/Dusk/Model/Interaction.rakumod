@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Interaction;
+unit class Dusk::Model::Interaction is export;
 
 has Str $.id             = '';
 has Str $.application-id = '';

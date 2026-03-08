@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::StageInstance;
+unit class Dusk::Model::StageInstance is export;
 
 has Str  $.id                       = '';
 has Str  $.guild-id                 = '';

@@ -1,7 +1,7 @@
 use v6.d;
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Embed;
+unit class Dusk::Model::Embed is export;
 
 has $.title;
 has $.type;
@@ -34,3 +34,5 @@ method new(*%args) {
         fields      => @(%args<fields> // []),
     )
 }
+
+method from-json($data) { self.new(|jmap($data)) }

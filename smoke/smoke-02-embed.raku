@@ -18,7 +18,7 @@ my %embed = (
     timestamp => DateTime.now.Str,
 );
 
-my $resp = api-post-json("/channels/$channel-id/messages", { embeds => [%embed] });
+my $resp = api-post-json("/channels/$channel-id/messages", { embeds => [ $(%embed) ] });
 
 die "id missing"                    unless $resp<id>;
 die "embeds missing"                unless $resp<embeds> && $resp<embeds>.elems;

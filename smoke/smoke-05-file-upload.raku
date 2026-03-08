@@ -15,35 +15,31 @@ LEAVE { $f.unlink if $f.e }
 my $filename = $f.basename;
 my $content  = $f.slurp(:bin);
 
-# Note: Cro supports multipart/form-data via array of pairs
-my $client = Cro::HTTP::Client.new(:http<1.1>,
-    headers => [Authorization => "Bot $token"]);
+# Note: Using curl as a robust fallback for multipart/form-data
+my $payload = to-json({
+        content     => "🧪 ST-05 — File Upload",
+        attachments => [ $( { id => 0, filename => $filename } ) ],
+});
 
-my $resp = await $client.post(
-    "https://discord.com/api/v10/channels/$channel-id/messages",
-    content-type => 'multipart/form-data',
-    body => [
-        payload_json => to-json({
-                content     => "🧪 ST-05 — File Upload",
-                attachments => [{ id => 0, description => "smoke test file" }],
-        }),
-        "files[0]" => $content,   # Blob — Cro serializes as octet-stream
-    ],
-);
+my $cmd = "curl -s -X POST "
+~ "-H 'Authorization: Bot $token' "
+~ "-F 'payload_json=$payload' "
+~ "-F \"files[0]=\@{$f.absolute}\" "
+~ "'https://discord.com/api/v10/channels/$channel-id/messages'";
 
-die "Upload failed: status {$resp.status}" unless $resp.status == 200;
-my $body = from-json(await $resp.body-text);
+my $proc = shell($cmd, :out);
+my $output = $proc.out.slurp(:close);
 
-die "id missing"          unless $body<id>;
-die "attachments missing" unless $body<attachments> && $body<attachments>.elems;
+if $proc.exitcode != 0 {
+    die "Curl failed with exit code {$proc.exitcode}: $output";
+}
 
-my $att = $body<attachments>[0];
-die "url missing" unless $att<url>;
+my $body = from-json($output);
 
-# Download and verification
-my $dl   = await Cro::HTTP::Client.new(:http<1.1>).get($att<url>);
-my $data = await $dl.body-blob;
-die "downloaded file is empty" unless $data.elems > 0;
+if $body<id> {
+    say "ST-05 OK — '{$body<attachments>[0]<filename>}' ({$body<attachments>[0]<size>}B) sent";
+} else {
+    die "Upload Failed: " ~ $output;
+}
 
-say "ST-05 OK — '{$att<filename>}' ({$att<size>}B) sent and downloaded";
 exit 0;

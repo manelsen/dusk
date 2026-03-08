@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Presence;
+unit class Dusk::Model::Presence is export;
 
 has      $.user; # Dusk::Model::User
 has Str  $.guild-id = '';

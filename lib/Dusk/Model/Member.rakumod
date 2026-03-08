@@ -2,7 +2,7 @@ use v6.d;
 use Dusk::Util::JSONTraits;
 use Dusk::Model::User;
 
-unit class Dusk::Model::Member;
+unit class Dusk::Model::Member is export;
 
 has Dusk::Model::User $.user;
 has $.nick;

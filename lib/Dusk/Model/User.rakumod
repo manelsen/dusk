@@ -1,12 +1,12 @@
 use v6.d;
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::User;
+unit class Dusk::Model::User is export is export;
 
 has Str  $.id            = '';
 has Str  $.username      = '';
 has Str  $.discriminator = '';
-has Str  $.avatar        = '';
+has      $.avatar;
 has Bool $.bot           = False;
 has Bool $.system        = False;
 

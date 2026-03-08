@@ -31,11 +31,11 @@ my @results;
 for @smoke-files -> $f {
     printf "  %-38s", $f.basename;
     my $t0 = now;
-    my $proc = run 'raku', '-I../../lib',
-        $f.absolute,
-        :env(%*ENV),
-        :out, :err,
-        :merge;          # stderr → stdout
+    my $proc = run 'raku', '-Ilib',
+    $f.absolute,
+    :env(%*ENV),
+    :out, :err,
+    :merge;          # stderr → stdout
     my $elapsed = now - $t0;
     my $ok      = $proc.exitcode == 0;
     my $output  = $proc.out.slurp;
@@ -57,6 +57,6 @@ my $total  = @results.elems;
 
 say "\n" ~ "─" x 65;
 printf "  %d/%d passed  ·  %.2fs total\n",
-    $passed, $total, @results.map(*<elapsed>).sum;
+$passed, $total, @results.map(*<elapsed>).sum;
 say "─" x 65;
 exit $passed == $total ?? 0 !! 1;

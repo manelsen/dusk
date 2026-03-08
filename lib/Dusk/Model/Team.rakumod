@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Team;
+unit class Dusk::Model::Team is export;
 
 has Str  $.id            = '';
 has Str  $.icon          = '';

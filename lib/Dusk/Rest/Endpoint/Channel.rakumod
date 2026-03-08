@@ -86,13 +86,6 @@ method delete-channels-thread-members(:$channel-id!, :$user-id!) returns Dusk::R
     );
 }
 
-method delete-stage-instances(:$channel-id!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'DELETE',
-        path   => qq[/stage-instances/$channel-id],
-    );
-}
-
 method get-channel(:$channel-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method       => 'GET',
@@ -185,13 +178,6 @@ method get-channels-users-me-threads-archived-private(:$channel-id!) returns Dus
     );
 }
 
-method get-stage-instance(:$channel-id!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/stage-instances/$channel-id],
-    );
-}
-
 method patch-channels(:$channel-id!, *%body) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'PATCH',
@@ -212,14 +198,6 @@ method patch-lobbies-channel-linking(:$lobby-id!, *%body) returns Dusk::Rest::Ro
     return Dusk::Rest::Route.new(
         method => 'PATCH',
         path   => qq[/lobbies/$lobby-id/channel-linking],
-        body   => %body,
-    );
-}
-
-method patch-stage-instances(:$channel-id!, *%body) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'PATCH',
-        path   => qq[/stage-instances/$channel-id],
         body   => %body,
     );
 }

@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Sticker;
+unit class Dusk::Model::Sticker is export;
 
 has Str  $.id          = '';
 has Str  $.name        = '';

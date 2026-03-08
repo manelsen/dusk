@@ -28,7 +28,12 @@
         "Dusk::Component": "lib/Dusk/Component.rakumod",
         "Dusk::Cache": "lib/Dusk/Cache.rakumod",
         "Dusk::Voice::Client": "lib/Dusk/Voice/Client.rakumod",
-        "Dusk::Rest::Route": "lib/Dusk/Rest/Route.rakumod"
+        "Dusk::Rest::Route": "lib/Dusk/Rest/Route.rakumod",
+        "Dusk::Enum": "lib/Dusk/Enum.rakumod",
+        "Dusk::Model::PartialGuild": "lib/Dusk/Model/PartialGuild.rakumod",
+        "Dusk::Model::PartialChannel": "lib/Dusk/Model/PartialChannel.rakumod",
+        "Dusk::Model::PartialMember": "lib/Dusk/Model/PartialMember.rakumod",
+        "Dusk::Model::AuditLogChange": "lib/Dusk/Model/AuditLogChange.rakumod"
     },
     "source-url": "https://github.com/manelsen/dusk"
 }

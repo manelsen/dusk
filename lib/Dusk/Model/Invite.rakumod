@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Invite;
+unit class Dusk::Model::Invite is export;
 
 has Str $.code                       = '';
 has     $.guild;   # Dusk::Model::Guild

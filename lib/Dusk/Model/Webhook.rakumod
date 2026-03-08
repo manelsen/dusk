@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Webhook;
+unit class Dusk::Model::Webhook is export;
 
 has Str  $.id             = '';
 has Int  $.type           = 1;

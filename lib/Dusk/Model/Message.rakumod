@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Message;
+unit class Dusk::Model::Message is export;
 
 has Str $.id               = '';
 has Str $.channel-id       = '';
@@ -12,7 +12,7 @@ has     @.attachments;
 has Bool $.tts             = False;
 has Bool $.mention-everyone = False;
 has Str $.timestamp        = '';
-has Str $.edited-timestamp = '';
+has     $.edited-timestamp;
 has Int $.type             = 0;
 has Int $.flags            = 0;
 

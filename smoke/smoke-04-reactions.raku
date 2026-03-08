@@ -12,13 +12,15 @@ my $msg-id = $msg<id> or die "Failed to create message";
 
 # 2. Add reactions (PUT → 204)
 for <👍 ❤️ 🚀> -> $emoji {
-    my $status = api-put("/channels/$channel-id/messages/$msg-id/reactions/$emoji/\@me");
+    my $status = api-put("/channels/$channel-id/messages/$msg-id/reactions/{uri-encode($emoji)}/\@me");
     say "  Reaction '$emoji': " ~ ($status == 204 ?? "✅" !! "⚠️ status=$status");
 }
 
-# 3. Remove all reactions (DELETE → 204)
-my $del-status = api-delete("/channels/$channel-id/messages/$msg-id/reactions");
-say "  Remove all reactions: " ~ ($del-status == 204 ?? "✅" !! "⚠️ status=$del-status");
+# 3. Remove reactions individually (DELETE → 204)
+for <👍 ❤️ 🚀> -> $emoji {
+    my $del-status = api-delete("/channels/$channel-id/messages/$msg-id/reactions/{uri-encode($emoji)}/\@me");
+    say "  Remove reaction '$emoji': " ~ ($del-status == 204 ?? "✅" !! "⚠️ status=$del-status");
+}
 
 say "ST-04 OK — msg-id=$msg-id";
 exit 0;

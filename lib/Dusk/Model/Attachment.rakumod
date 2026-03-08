@@ -1,7 +1,7 @@
 use v6.d;
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Attachment;
+unit class Dusk::Model::Attachment is export;
 
 has $.id           is required;
 has $.filename     is required;
@@ -28,3 +28,5 @@ method new(*%args) {
         ephemeral    => ?%args<ephemeral>,
     )
 }
+
+method from-json($data) { self.new(|jmap($data)) }

@@ -19,48 +19,121 @@ sub client(--> Cro::HTTP::Client) {
     );
 }
 
+sub uri-encode(Str $str --> Str) is export {
+    $str.encode('utf-8').list.map({
+            my $c = .chr;
+            $c ~~ /<[A..Za..z0..9\-\._~]>/ ?? $c !! sprintf("%%%02X", $_)
+    }).join;
+}
+
+sub handle-response($r) {
+    my $body-text = await $r.body-text;
+    if $r.status >= 400 {
+        note "DEBUG: API Error {$r.status} for {$r.request.method} {$r.request.target}";
+        note "DEBUG: Response Body: $body-text";
+    }
+    return from-json($body-text);
+}
+
 sub api-get(Str $path --> Any) is export {
-    my $r = await client().get(BASE ~ $path);
-    from-json(await $r.body-text);
+    my $r;
+    try {
+        $r = await client().get(BASE ~ $path);
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    handle-response($r);
 }
 
 sub api-post(Str $path, %body --> Any) is export {
-    my $r = await client().post(
-        BASE ~ $path,
-        body         => to-json(%body).encode('utf-8'),
-        content-type => 'application/json',
-    );
-    from-json(await $r.body-text);
+    my $r;
+    try {
+        $r = await client().post(
+            BASE ~ $path,
+            body         => to-json(%body).encode('utf-8'),
+            content-type => 'application/json',
+        );
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    handle-response($r);
 }
 
 sub api-post-json(Str $path, $body --> Any) is export {
-    my $r = await client().post(
-        BASE ~ $path,
-        body         => to-json($body).encode('utf-8'),
-        content-type => 'application/json',
-    );
-    from-json(await $r.body-text);
+    my $r;
+    try {
+        $r = await client().post(
+            BASE ~ $path,
+            body         => to-json($body).encode('utf-8'),
+            content-type => 'application/json',
+        );
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    handle-response($r);
 }
 
 sub api-patch(Str $path, %body --> Any) is export {
-    my $r = await client().patch(
-        BASE ~ $path,
-        body         => to-json(%body).encode('utf-8'),
-        content-type => 'application/json',
-    );
-    from-json(await $r.body-text);
+    my $r;
+    try {
+        $r = await client().patch(
+            BASE ~ $path,
+            body         => to-json(%body).encode('utf-8'),
+            content-type => 'application/json',
+        );
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    handle-response($r);
 }
 
 sub api-delete(Str $path --> Int) is export {
-    my $r = await client().delete(BASE ~ $path);
+    my $r;
+    try {
+        $r = await client().delete(BASE ~ $path);
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    if $r.status >= 400 {
+        my $body-text = await $r.body-text;
+        note "DEBUG: API Error {$r.status} for {$r.request.method} {$r.request.target}";
+        note "DEBUG: Response Body: $body-text";
+    }
     $r.status;
 }
 
 sub api-put(Str $path --> Int) is export {
-    my $r = await client().put(
-        BASE ~ $path,
-        body         => '{}',
-        content-type => 'application/json',
-    );
+    my $r;
+    try {
+        $r = await client().put(
+            BASE ~ $path,
+        );
+        CATCH {
+            when X::Cro::HTTP::Error {
+                $r = .response;
+            }
+        }
+    }
+    # We only care about status for PUT in most tests, but lets see body if error
+    if $r.status >= 400 {
+        my $body-text = await $r.body-text;
+        note "DEBUG: API Error {$r.status} for {$r.request.method} {$r.request.target}";
+        note "DEBUG: Response Body: $body-text";
+    }
     $r.status;
 }

@@ -1,15 +1,15 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Channel;
+unit class Dusk::Model::Channel is export;
 
 has Str $.id                  = '';
 has Str $.name                = '';
 has Int $.type                = 0;
 has Str $.guild-id            = '';
 has Int $.position            = 0;
-has Str $.topic               = '';
+has     $.topic;
 has Bool $.nsfw               = False;
-has Str $.last-message-id     = '';
+has     $.last-message-id;
 has Int $.bitrate             = 0;
 has Int $.user-limit          = 0;
 has Int $.rate-limit-per-user = 0;

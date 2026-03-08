@@ -1,0 +1,22 @@
+=== SMOKE TESTS COM MOCK ===
+An operation first awaited:
+  in block <unit> at smoke/smoke-test-mock.raku line 90
+
+Died with the exception:
+    Attempt to return outside of any Routine
+      in block  at smoke/smoke-test-mock.raku line 20
+      in block  at /home/micelio/git/Dusk/lib/Dusk/Rest/Client.rakumod (Dusk::Rest::Client) line 55
+      in block  at /home/micelio/git/Dusk/lib/Dusk/Rest/Client.rakumod (Dusk::Rest::Client) line 50
+
+
+Token: MOCK_TOKEN_12345
+Guild ID: 1212124712629440612
+Channel ID: 1212124713271304246
+
+Cliente: Dusk::Rest::Client<api-v10>
+
+Modo: MOCK (sem conexão com Discord real)
+
+Teste 1: Obtendo informações do bot (mock)...
+  📡 Requisição MOCK: GET https://discord.com/api/v10/users/@me
+  ❌ Erro: Attempt to return outside of any Routine

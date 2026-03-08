@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::ScheduledEvent;
+unit class Dusk::Model::ScheduledEvent is export;
 
 has Str  $.id                   = '';
 has Str  $.guild-id             = '';

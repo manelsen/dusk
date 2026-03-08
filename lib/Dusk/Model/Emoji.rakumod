@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Emoji;
+unit class Dusk::Model::Emoji is export;
 
 has Str  $.id        = '';
 has Str  $.name      = '';

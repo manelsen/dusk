@@ -2,41 +2,7 @@ use Dusk::Rest::Endpoint::Base;
 
 unit role Dusk::Rest::Endpoint::User does Dusk::Rest::Endpoint::Base;
 
-method delete-lobbies-members(:$lobby-id!, :$user-id!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'DELETE',
-        path   => qq[/lobbies/$lobby-id/members/$user-id],
-    );
-}
-
-method get-invites-target-users(:$invite-code!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/invites/$invite-code/target-users],
-    );
-}
-
-method get-invites-target-users-job-status(:$invite-code!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/invites/$invite-code/target-users/job-status],
-    );
-}
-
-method get-oauth2-me() returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/oauth2/@me],
-    );
-}
-
-method get-oauth2-applications-me() returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/oauth2/applications/@me],
-    );
-}
-
+#| Returns the user object of the requester's account.
 method get-users-me() returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
@@ -44,20 +10,7 @@ method get-users-me() returns Dusk::Rest::Route {
     );
 }
 
-method get-users-me-applications-role-connection(:$application-id!) returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/users/@me/applications/$application-id/role-connection],
-    );
-}
-
-method get-users-me-connections() returns Dusk::Rest::Route {
-    return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/users/@me/connections],
-    );
-}
-
+#| Returns a user object for a given user ID.
 method get-user(:$user-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
@@ -65,6 +18,7 @@ method get-user(:$user-id!) returns Dusk::Rest::Route {
     );
 }
 
+#| Modify the requester's user account settings.
 method patch-users-me(*%body) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'PATCH',
@@ -73,19 +27,18 @@ method patch-users-me(*%body) returns Dusk::Rest::Route {
     );
 }
 
-method put-invites-target-users(:$invite-code!, *%body) returns Dusk::Rest::Route {
+#| Returns a list of connection objects for the requester.
+method get-users-me-connections() returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'PUT',
-        path   => qq[/invites/$invite-code/target-users],
-        body   => %body,
+        method => 'GET',
+        path   => qq[/users/@me/connections],
     );
 }
 
-method put-lobbies-members(:$lobby-id!, :$user-id!, *%body) returns Dusk::Rest::Route {
+method get-users-me-applications-role-connection(:$application-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'PUT',
-        path   => qq[/lobbies/$lobby-id/members/$user-id],
-        body   => %body,
+        method => 'GET',
+        path   => qq[/users/@me/applications/$application-id/role-connection],
     );
 }
 

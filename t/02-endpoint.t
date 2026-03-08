@@ -379,7 +379,7 @@ subtest 'Endpoint: DELETE /lobbies/{lobby.id}/members/{user.id}' => {
 
 subtest 'Endpoint: DELETE /stage-instances/{channel.id}' => {
     my $route;
-    lives-ok { $route = Dusk::Rest::Endpoint.delete-stage-instances(channel-id => 'test-val') }, 'Method delete-stage-instances exists and accepts parameters';
+    lives-ok { $route = Dusk::Rest::Endpoint.delete-stage-instance(channel-id => 'test-val') }, 'Method delete-stage-instance exists and accepts parameters';
     
     if $route {
         is $route.method, 'DELETE', 'Method is DELETE';
@@ -1891,7 +1891,7 @@ subtest 'Endpoint: PATCH /lobbies/{lobby.id}/channel-linking' => {
 
 subtest 'Endpoint: PATCH /stage-instances/{channel.id}' => {
     my $route;
-    lives-ok { $route = Dusk::Rest::Endpoint.patch-stage-instances(channel-id => 'test-val') }, 'Method patch-stage-instances exists and accepts parameters';
+    lives-ok { $route = Dusk::Rest::Endpoint.patch-stage-instance(channel-id => 'test-val') }, 'Method patch-stage-instance exists and accepts parameters';
     
     if $route {
         is $route.method, 'PATCH', 'Method is PATCH';
@@ -2311,7 +2311,7 @@ subtest 'Endpoint: POST /lobbies' => {
 
 subtest 'Endpoint: POST /stage-instances' => {
     my $route;
-    lives-ok { $route = Dusk::Rest::Endpoint.post-stage-instances() }, 'Method post-stage-instances exists and accepts parameters';
+    lives-ok { $route = Dusk::Rest::Endpoint.post-stage-instance() }, 'Method post-stage-instance exists and accepts parameters';
     
     if $route {
         is $route.method, 'POST', 'Method is POST';

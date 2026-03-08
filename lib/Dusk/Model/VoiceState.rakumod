@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::VoiceState;
+unit class Dusk::Model::VoiceState is export;
 
 has Str  $.guild-id                   = '';
 has Str  $.channel-id                 = '';

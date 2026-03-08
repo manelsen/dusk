@@ -1,4 +1,8 @@
 use Dusk::Rest::Endpoint::Base;
+use Dusk::Model::Guild;
+use Dusk::Model::Member;
+use Dusk::Model::Role;
+use Dusk::Model::Channel;
 
 unit role Dusk::Rest::Endpoint::Guild does Dusk::Rest::Endpoint::Base;
 
@@ -130,8 +134,9 @@ method get-guilds-template(:$template-code!) returns Dusk::Rest::Route {
 
 method get-guild(:$guild-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/guilds/$guild-id],
+        method       => 'GET',
+        path         => qq[/guilds/$guild-id],
+        target-model => Dusk::Model::Guild,
     );
 }
 
@@ -230,6 +235,15 @@ method get-guilds-onboarding(:$guild-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
         path   => qq[/guilds/$guild-id/onboarding],
+    );
+}
+
+
+method patch-guilds-onboarding(:$guild-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'PATCH',
+        path   => qq[/guilds/$guild-id/onboarding],
+        body   => %body,
     );
 }
 
@@ -425,6 +439,15 @@ method patch-guilds-auto-moderation-rules(:$guild-id!, :$auto-moderation-rule-id
     );
 }
 
+
+method patch-guilds-incident-actions(:$guild-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'PATCH',
+        path   => qq[/guilds/$guild-id/incident-actions],
+        body   => %body,
+    );
+}
+
 method patch-guilds-channels(:$guild-id!, *%body) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'PATCH',
@@ -550,6 +573,21 @@ method post-applications-guilds-commands(:$application-id!, :$guild-id!, *%body)
         method => 'POST',
         path   => qq[/applications/$application-id/guilds/$guild-id/commands],
         body   => %body,
+    );
+}
+# | Register a global application command.
+method post-applications-commands-v2(:$application-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'POST',
+        path   => qq[/applications/$application-id/commands],
+        body   => %body,
+    );
+}
+
+method get-applications-guilds-commands-v2(:$application-id!, :$guild-id!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/applications/$application-id/guilds/$guild-id/commands],
     );
 }
 

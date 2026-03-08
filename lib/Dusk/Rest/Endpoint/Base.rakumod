@@ -18,10 +18,15 @@ use Dusk::Model::Application;
 
 unit role Dusk::Rest::Endpoint::Base;
 
-method !route(Str $method, Str $path, :$target-model = Any, *%body) {
+method route(Str $method, Str $path, :$target-model = Any, :%query = {}, :%body = {}) {
+    my $full-path = $path;
+    if %query {
+        $full-path ~= '?' ~ %query.map({ "$(.key)={.value}" }).join('&');
+    }
+
     return Dusk::Rest::Route.new(
         :$method,
-        :$path,
+        path => $full-path,
         :$target-model,
         body => %body
     );

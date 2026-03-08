@@ -1,11 +1,16 @@
+use v6.d;
 use Dusk::Util::JSONTraits;
-unit class Dusk::Model::Guild;
 
-has $.id                 = '';
-has $.name               = '';
-has $.owner-id           = '';
-has $.verification-level = 0;
+unit class Dusk::Model::Guild is export;
 
-method new(*%args) { self.bless(|%args) }
+has Str $.id;
+has Str $.name;
+has Str $.owner-id;
+has Int $.verification-level;
+has Positional $.members;
+has Positional $.channels;
+has Positional $.roles;
 
-method from-json($data) { self.new(|jmap($data)) }
+method from-json($data) {
+    self.new(|jmap($data))
+}

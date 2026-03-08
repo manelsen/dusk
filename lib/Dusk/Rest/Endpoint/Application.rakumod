@@ -1,4 +1,5 @@
 use Dusk::Rest::Endpoint::Base;
+use Dusk::Model::Application;
 
 unit role Dusk::Rest::Endpoint::Application does Dusk::Rest::Endpoint::Base;
 
@@ -25,8 +26,9 @@ method delete-applications-entitlements(:$application-id!, :$entitlement-id!) re
 
 method get-applications-me() returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'GET',
-        path   => qq[/applications/@me],
+        method       => 'GET',
+        path         => qq[/applications/@me],
+        target-model => Dusk::Model::Application,
     );
 }
 
@@ -90,6 +92,20 @@ method get-applications-skus(:$application-id!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
         path   => qq[/applications/$application-id/skus],
+    );
+}
+
+method get-oauth2-me() returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/oauth2/@me],
+    );
+}
+
+method get-oauth2-applications-me() returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/oauth2/applications/@me],
     );
 }
 
@@ -175,6 +191,49 @@ method put-applications-role-connections-metadata(:$application-id!, *%body) ret
     return Dusk::Rest::Route.new(
         method => 'PUT',
         path   => qq[/applications/$application-id/role-connections/metadata],
+        body   => %body,
+    );
+}
+# Get application info
+method get-application(:$application-id!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method       => 'GET',
+        path         => qq[/applications/$application-id],
+        target-model => Dusk::Model::Application,
+    );
+}
+
+# Modify application info
+method patch-application(:$application-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'PATCH',
+        path   => qq[/applications/$application-id],
+        body   => %body,
+    );
+}
+
+# Get application role connections
+method get-applications-role-connections(:$application-id!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/applications/$application-id/role-connections],
+    );
+}
+
+# Update application role connections
+method put-applications-role-connections(:$application-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'PUT',
+        path   => qq[/applications/$application-id/role-connections],
+        body   => %body,
+    );
+}
+
+# Create test entitlement
+method post-applications-entitlements-create(:$application-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'POST',
+        path   => qq[/applications/$application-id/entitlements],
         body   => %body,
     );
 }

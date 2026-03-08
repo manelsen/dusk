@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Overwrite;
+unit class Dusk::Model::Overwrite is export;
 
 has Str  $.id    = '';
 has Int  $.type  = 0;

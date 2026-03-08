@@ -23,6 +23,13 @@ method delete-lobbies-members-me(:$lobby-id!) returns Dusk::Rest::Route {
     );
 }
 
+method delete-lobbies-members(:$lobby-id!, :$user-id!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'DELETE',
+        path   => qq[/lobbies/$lobby-id/members/$user-id],
+    );
+}
+
 method get-gateway() returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
@@ -41,6 +48,20 @@ method get-invite(:$invite-code!) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
         method => 'GET',
         path   => qq[/invites/$invite-code],
+    );
+}
+
+method get-invites-target-users(:$invite-code!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/invites/$invite-code/target-users],
+    );
+}
+
+method get-invites-target-users-job-status(:$invite-code!) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'GET',
+        path   => qq[/invites/$invite-code/target-users/job-status],
     );
 }
 
@@ -110,10 +131,18 @@ method post-lobbies(*%body) returns Dusk::Rest::Route {
     );
 }
 
-method post-stage-instances(*%body) returns Dusk::Rest::Route {
+method put-invites-target-users(:$invite-code!, *%body) returns Dusk::Rest::Route {
     return Dusk::Rest::Route.new(
-        method => 'POST',
-        path   => qq[/stage-instances],
+        method => 'PUT',
+        path   => qq[/invites/$invite-code/target-users],
+        body   => %body,
+    );
+}
+
+method put-lobbies-members(:$lobby-id!, :$user-id!, *%body) returns Dusk::Rest::Route {
+    return Dusk::Rest::Route.new(
+        method => 'PUT',
+        path   => qq[/lobbies/$lobby-id/members/$user-id],
         body   => %body,
     );
 }

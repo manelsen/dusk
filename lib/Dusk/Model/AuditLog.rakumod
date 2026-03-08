@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::AuditLog;
+unit class Dusk::Model::AuditLog is export;
 
 has @.audit-log-entries;
 has @.users;

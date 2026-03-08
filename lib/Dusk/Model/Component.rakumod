@@ -1,7 +1,7 @@
 use v6.d;
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::Component;
+unit class Dusk::Model::Component is export;
 
 has $.type is required;
 has $.style;
@@ -26,3 +26,5 @@ method new(*%args) {
         components => @components,
     )
 }
+
+method from-json($data) { self.new(|jmap($data)) }

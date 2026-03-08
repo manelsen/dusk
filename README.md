@@ -1,6 +1,6 @@
 # Dusk
 
-> Idiomatic Raku wrapper for the Discord REST API v10.
+> Idiomatic Raku wrapper for the Discord API v10, providing support for REST, Gateway, and Voice.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -42,12 +42,13 @@ say "Sent message: $msg<id>";
 
 ## Features
 
-- **219 REST endpoints** mapped to typed `Route` objects
-- **Async by default** — all requests return `Promise`
-- **Rate limit handling** — automatic retry on HTTP 429 with `Retry-After`
-- **Typed exceptions** — `Dusk::Error::Unauthorized`, `NotFound`, `Forbidden`, `APIError`, `RateLimit`
-- **Token safety** — token never exposed in `.gist` or `.Str` (RNF-02)
+- **REST API** — Comprehensive endpoint mapping to typed `Route` objects
+- **Gateway Support** — WebSocket connection with typed events via `Dispatcher`
+- **Voice Support** — Audio transmission, UDP connection, and encryption (`xchacha20_poly1305`)
+- **Async by default** — all network operations and event handlers use `Promise` and `Supply`
+- **Rate limit handling** — automatic retry on HTTP 429 with `Retry-After` (soon to be proactive)
 - **Functional core / effectful edge** — pure Models and Routes, side effects isolated in Client
+- **Modern Security** — Support for `xchacha20_poly1305` encryption for Voice and strict token protection
 
 ## Architecture
 
@@ -64,9 +65,9 @@ say "Sent message: $msg<id>";
 | Layer | Module | Role |
 |-------|--------|------|
 | **Core (Pure)** | `Dusk::Model::User`, `Channel`, `Message`, `Guild` | Immutable value objects |
-| **Core (Pure)** | `Dusk::Rest::Endpoint` | Route builder (219 methods) |
+| **Core (Pure)** | `Dusk::Rest::Endpoint` | Route builder |
 | **Core (Pure)** | `Dusk::Rest::Route` | HTTP method + path carrier |
-| **Edge** | `Dusk::Rest::Client` | HTTP execution, auth, rate limiting |
+| **Edge** | `Dusk::Rest::Client` | HTTP execution, auth, proactive rate limiting |
 
 ## Error Handling
 
@@ -89,7 +90,7 @@ try {
 
 ```
 # Unit + endpoint tests (no network)
-prove6 -l t/01-models.t t/02-endpoint.t t/03-client.t t/04-rest-flow.t t/06-rate-limit.t t/07-errors.t
+prove6 -l t/
 
 # Integration tests (requires DISCORD_BOT_TOKEN in .env)
 prove6 -l t/05-integration.t
@@ -97,13 +98,14 @@ prove6 -l t/05-integration.t
 
 ## Roadmap
 
-| Version | Content |
-|---------|---------|
-| `0.1.x` | REST API wrapper (current) |
-| `0.2.0` | Asgard re-gate closure |
-| `0.2.1` | Gateway WebSocket (events, heartbeat) |
-| `0.2.2` | Slash Commands, Buttons, Modals |
-| `0.2.3` | Cache, connection pooling, Voice stub |
+| Version | Status | Focus |
+|---------|--------|-------|
+| `0.1.x` | ✅ | REST API basic wrapper |
+| `0.2.x` | ✅ | Gateway WebSocket & Heartbeat |
+| `0.3.0` | 🔄 | Voice Support (UDP/RTP) & Proactive Rate Limiting |
+| `0.4.0` | ✅ | 100% Gateway Event Coverage & Exhaustive REST API mapping |
+| `0.5.0` | 🔄 | Interaction Framework (Buttons, Select Menus, Modals) |
+| `1.0.0` | ⏳ | Production Stable Release |
 
 ## License
 

@@ -1,6 +1,6 @@
 use Dusk::Util::JSONTraits;
 
-unit class Dusk::Model::AutoModRule;
+unit class Dusk::Model::AutoModRule is export;
 
 has Str  $.id           = '';
 has Str  $.guild-id     = '';
