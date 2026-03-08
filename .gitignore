@@ -26,5 +26,5 @@ endpoints_list.txt
 .asgard/
 .airules/
 evidence/
-GEMINI.md
-smoke/
+# GEMINI.md is ignored but we keep it here as a reminder
+# GEMINI.md
